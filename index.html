@@ -1139,6 +1139,12 @@ document.getElementById('sendFormBtn').addEventListener('click', async () => {
   e_photos:          fmtVal(data.photos),
   e_observations:    data.e_observations_client || '',
 });
+    // ============ FORMAT VALUE ============
+function fmtVal(v) {
+  if (!v) return '—';
+  if (Array.isArray(v)) return v.length ? v.join(', ') : '—';
+  return v || '—';
+}
 
     document.getElementById('successOverlay').classList.add('open');
     resetForm();
