@@ -121,8 +121,10 @@
   height: 70px;
   width: auto;
   object-fit: contain;
-  margin-bottom: 10px;
+
+  filter: none; 
 }
+
 .header-text {
   max-width: 520px;
 }
