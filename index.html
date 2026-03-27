@@ -671,7 +671,7 @@
       <div class="submit-info">
         <strong data-fr="Prêt à envoyer ?" data-en="Ready to send?">Prêt à envoyer ?</strong>
         <span data-fr="Le questionnaire sera transmis directement par email." data-en="The questionnaire will be sent directly by email.">Le questionnaire sera transmis directement par email.</span>
-        <span class="email-badge">✉ nyfitiakarmela@gmail.com</span>
+        <span class="email-badge">✉ contact@sosfuitedeau.com</span>
       </div>
       <div class="form-btns">
         <button type="button" class="btn-secondary" id="clearFormBtn" data-fr="Effacer" data-en="Clear">Effacer</button>
@@ -691,7 +691,7 @@
     <h2 class="success-title" data-fr="Questionnaire envoyé !" data-en="Questionnaire sent!">Questionnaire envoyé !</h2>
     <p class="success-sub">
       <span data-fr="Votre formulaire a bien été transmis à" data-en="Your form has been sent to">Votre formulaire a bien été transmis à</span>
-      <strong>nyfitiakarmela@gmail.com</strong>.
+      <strong>contact@sosfuitedeau.com</strong>.
       <span data-fr="Notre équipe prendra contact avec vous très prochainement." data-en="Our team will get back to you shortly.">Notre équipe prendra contact avec vous très prochainement.</span>
     </p>
     <button class="btn-primary" style="width:100%;justify-content:center" id="newFormBtn">
@@ -1065,7 +1065,7 @@ document.getElementById('sendFormBtn').addEventListener('click', async () => {
     const emailBody = buildEmailText(data);
 
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      to_email:   'nyfitiakarmela@gmail.com',
+      to_email:   'contact@sosfuitedeau.com',
       dossier:    data.refRapport,
       type_inter: typeLabels[data.type] || data.type,
       date_envoi: data.createdAt,
