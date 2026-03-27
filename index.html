@@ -20,21 +20,16 @@
 <!-- HEADER -->
 <header class="site-header">
   <div class="header-inner">
-
-    <!-- LOGO -->
     <img src="logowlg.png" alt="Logo" class="header-logo" />
-
-  <div class="header-text">
-    <div class="header-badge">
-      <span class="dot"></span>
-      <span data-fr="Formulaire d'intervention" data-en="Intervention Form">Formulaire d'intervention</span>
+    <div class="header-text">
+      <div class="header-badge">
+        <span class="dot"></span>
+        <span data-fr="Formulaire d'intervention" data-en="Intervention Form">Formulaire d'intervention</span>
+      </div>
+      <p class="header-sub">
+        <span data-fr="Remplissez ce questionnaire pour décrire votre problème. Les informations seront transmises directement à notre équipe." data-en="Fill in this questionnaire to describe your problem. The information will be sent directly to our team.">Remplissez ce questionnaire pour décrire votre problème. Les informations seront transmises directement à notre équipe.</span>
+      </p>
     </div>
-  
-    <p class="header-sub">
-      <span data-fr="Remplissez ce questionnaire pour décrire votre problème. Les informations seront transmises directement à notre équipe." data-en="Fill in this questionnaire to describe your problem. The information will be sent directly to our team.">Remplissez ce questionnaire pour décrire votre problème. Les informations seront transmises directement à notre équipe.</span>
-    </p>
-  </div>
-
   </div>
 </header>
 
@@ -63,9 +58,8 @@
 
   <form id="mainForm" autocomplete="off">
 
-    <!-- ======== INTÉRIEUR / INTERIOR ======== -->
+    <!-- ======== INTÉRIEUR ======== -->
     <div class="panel active" id="panel-interieur">
-
       <div class="form-card">
         <div class="form-card-header"><span class="step-num">1</span> <span data-fr="Origine du sinistre" data-en="Origin of the leak">Origine du sinistre</span></div>
         <div class="form-card-body">
@@ -268,7 +262,7 @@
       </div>
     </div><!-- /panel-interieur -->
 
-    <!-- ======== PISCINE / POOL ======== -->
+    <!-- ======== PISCINE ======== -->
     <div class="panel" id="panel-piscine">
       <div class="form-card">
         <div class="form-card-header"><span class="step-num">1</span> <span data-fr="Origine du problème / Perte d'eau" data-en="Problem origin / Water loss">Origine du problème / Perte d'eau</span></div>
@@ -453,7 +447,7 @@
       </div>
     </div><!-- /panel-piscine -->
 
-    <!-- ======== TOITURE / ROOFING ======== -->
+    <!-- ======== TOITURE ======== -->
     <div class="panel" id="panel-toiture">
       <div class="form-card">
         <div class="form-card-header"><span class="step-num">1</span> <span data-fr="Origine du problème" data-en="Origin of the problem">Origine du problème</span></div>
@@ -495,7 +489,7 @@
       </div>
     </div><!-- /panel-toiture -->
 
-    <!-- ======== EXTÉRIEUR / EXTERIOR ======== -->
+    <!-- ======== EXTÉRIEUR ======== -->
     <div class="panel" id="panel-exterieur">
       <div class="form-card">
         <div class="form-card-header"><span class="step-num">1</span> <span data-fr="Origine du problème" data-en="Origin of the problem">Origine du problème</span></div>
@@ -708,7 +702,7 @@
 'use strict';
 
 // =====================================================
-// ⚠️  CONFIGURATION EMAILJS — À REMPLIR / TO FILL IN
+// ⚠️  CONFIGURATION EMAILJS
 // =====================================================
 const EMAILJS_PUBLIC_KEY  = 'WRObk6XItB_ad2Wcv';
 const EMAILJS_SERVICE_ID  = 'service_310qkf3';
@@ -726,30 +720,18 @@ function setLang(lang) {
   document.getElementById('btnFR').classList.toggle('active', lang === 'fr');
   document.getElementById('btnEN').classList.toggle('active', lang === 'en');
   document.documentElement.lang = lang;
-
-  // Update all [data-fr] / [data-en] elements
   document.querySelectorAll('[data-fr]').forEach(el => {
     const txt = el.getAttribute('data-' + lang);
     if (txt !== null) el.textContent = txt;
   });
-
-  // Update placeholders
   document.querySelectorAll('[data-ph-fr]').forEach(el => {
     const ph = el.getAttribute('data-ph-' + lang);
     if (ph !== null) el.placeholder = ph;
   });
-
-  // Update page title
   const titleEl = document.querySelector('title');
   if (titleEl) titleEl.textContent = titleEl.getAttribute('data-' + lang) || titleEl.textContent;
-
-  // Update dossier label separately (it's in a div not a span)
   const dossierLabel = document.querySelector('.dossier-label');
-  if (dossierLabel) {
-    dossierLabel.textContent = lang === 'fr' ? 'Entrez votre email' : 'Enter your email';
-  }
-
-  // Update clear button (text node)
+  if (dossierLabel) dossierLabel.textContent = lang === 'fr' ? 'Entrez votre email' : 'Enter your email';
   const clearBtn = document.getElementById('clearFormBtn');
   if (clearBtn) clearBtn.textContent = lang === 'fr' ? 'Effacer' : 'Clear';
 }
@@ -778,16 +760,23 @@ document.querySelectorAll('.type-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     currentType = btn.dataset.type;
     document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b === btn));
-    document.querySelectorAll('.panel').forEach(p  => p.classList.toggle('active', p.id === 'panel-' + currentType));
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + currentType));
   });
 });
+
+// ============ FORMAT VALUE ============
+// ⚠️ DOIT être définie AVANT le listener sendFormBtn
+function fmtVal(v) {
+  if (!v) return '—';
+  if (Array.isArray(v)) return v.length ? v.join(', ') : '—';
+  return v || '—';
+}
 
 // ============ COLLECT FORM ============
 function collectForm() {
   const form = document.getElementById('mainForm');
   const data = { type: currentType, lang: currentLang };
   data.refRapport = (document.getElementById('refRapport').value || '').trim();
-
   const groups = {};
   form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
     if (!cb.name) return;
@@ -795,7 +784,6 @@ function collectForm() {
     if (cb.checked) groups[cb.name].push(cb.value);
   });
   Object.assign(data, groups);
-
   form.querySelectorAll('input[type="text"], input[type="number"], input[type="tel"], textarea').forEach(el => {
     if (el.name) data[el.name] = el.value.trim();
   });
@@ -828,131 +816,127 @@ function buildEmailText(data) {
   }
 
   const L = {
-    header:        isFr ? "📋 QUESTIONNAIRE D'INTERVENTION — SOS FUITE D'EAU" : "📋 SERVICE REQUEST FORM — WATER LEAK",
-    divider:       '════════════════════════════════════════════════',
-    dossier:       isFr ? 'Dossier N°' : 'File N°',
-    type:          isFr ? 'Type' : 'Type',
-    date:          isFr ? 'Date' : 'Date',
-    // Interior
-    s1_i: isFr ? '1. Origine du sinistre'   : '1. Leak origin',
-    anciennete:    isFr ? 'Ancienneté'       : 'How long',
-    progresse:     isFr ? 'Dégât progresse'  : 'Damage spreading',
-    eau_coule:     isFr ? 'Eau coule'        : 'Water flowing',
-    alim:          isFr ? 'Alimentation coupée' : 'Supply shut off',
-    fuite_arrete:  isFr ? "Fuite s'arrête"   : 'Leak stops',
-    s2_i: isFr ? '2. Localisation'           : '2. Location',
-    zone:          isFr ? 'Zone'             : 'Area',
-    piece:         isFr ? 'Pièce(s)'         : 'Room(s)',
-    niveau:        isFr ? 'Niveau'           : 'Floor level',
-    s3_i: isFr ? '3. Environnement'          : '3. Surroundings',
-    au_dessus:     isFr ? 'Au-dessus'        : 'Above',
-    en_dessous:    isFr ? 'En dessous'       : 'Below',
-    derriere:      isFr ? 'Derrière mur'     : 'Behind wall',
-    s4_i: isFr ? '4. Humidité / Indices'     : '4. Moisture / Signs',
-    z_humide:      isFr ? 'Zone humide'      : 'Damp zone',
-    precision:     isFr ? 'Précision'        : 'Details',
-    odeur:         isFr ? 'Odeur'            : 'Smell',
-    indices:       isFr ? 'Indices'          : 'Signs',
-    s5_i: isFr ? '5. Installations / Travaux': '5. Installations / Works',
-    chauffe:       isFr ? 'Chauffe-eau'      : 'Water heater',
-    chauffe_type:  isFr ? 'Type chauffe-eau' : 'Heater type',
-    travaux:       isFr ? 'Travaux récents'  : 'Recent works',
-    travaux_nat:   isFr ? 'Nature travaux'   : 'Work nature',
-    // Pool
-    s1_p: isFr ? "1. Origine / Perte d'eau"  : '1. Origin / Water loss',
-    perte:         isFr ? "Perte d'eau (cm/24h)" : 'Water loss (cm/24h)',
-    filtration:    isFr ? 'Fuite se produit' : 'Leak occurs',
-    skimmer_niv:   isFr ? 'Niveau/skimmers'  : 'Level/skimmers',
-    s2_p: isFr ? '2. Type de piscine'        : '2. Pool type',
-    revetement:    isFr ? 'Revêtement'       : 'Lining',
-    volume:        isFr ? 'Volume (m³)'      : 'Volume (m³)',
-    s3_p: isFr ? '3. Équipements'            : '3. Equipment',
-    equip:         isFr ? 'Équipements'      : 'Equipment',
-    type_filtre:   isFr ? 'Type filtre'      : 'Filter type',
-    s4_p: isFr ? '4. Local technique'        : '4. Equipment room',
-    local:         isFr ? 'Local présent'    : 'Room present',
-    local_cont:    isFr ? 'Contient'         : 'Contains',
-    local_autre:   isFr ? 'Autre équip.'     : 'Other equip.',
-    local_humid:   isFr ? 'Traces humidité'  : 'Moisture traces',
-    s5_p: isFr ? '5. Analyse par zone'       : '5. Zone analysis',
-    skim_def:      isFr ? 'Skimmers défaut'  : 'Skimmer defect',
-    skim_det:      isFr ? 'Précision skimmers' : 'Skimmer details',
-    microbulles:   isFr ? 'Micro-bulles'     : 'Micro-bubbles',
-    bonde:         isFr ? 'Bonde en cause'   : 'Main drain involved',
-    prise_balai:   isFr ? 'Prise balai perte': 'Vacuum point loss',
-    cana:          isFr ? 'Canalis. enterrées': 'Underground pipes',
-    plan:          isFr ? 'Plan connu'       : 'Plan available',
-    doc:           isFr ? 'Document dispo'   : 'Document available',
-    // Roof
-    s1_t: isFr ? '1. Origine'               : '1. Origin',
-    conditions:    isFr ? 'Conditions'       : 'Conditions',
-    zone_int:      isFr ? 'Zone intérieure'  : 'Interior area',
-    observations:  isFr ? 'Observations'     : 'Observations',
-    // Exterior
-    s1_e: isFr ? '1. Origine'               : '1. Origin',
-    surconso:      isFr ? 'Surconso.'        : 'Overconsumption',
-    compteur_t:    isFr ? 'Compteur tourne'  : 'Meter running',
-    vanne:         isFr ? 'Vanne testée'     : 'Valve tested',
-    fuite_vis:     isFr ? 'Fuite visible'    : 'Visible leak',
-    loc_fuite:     isFr ? 'Localisation'     : 'Location',
-    s2_e: isFr ? '2. Localisation'          : '2. Location',
-    distance:      isFr ? 'Distance compteur': 'Meter distance',
-    type_sol:      isFr ? 'Type sol'         : 'Ground type',
-    s3_e: isFr ? '3. Compteur & Réseau'     : '3. Meter & Network',
-    compteur_loc:  isFr ? 'Localisation compteur': 'Meter location',
-    type_compteur: isFr ? 'Type compteur'    : 'Meter type',
-    accessible:    isFr ? 'Accessible'       : 'Accessible',
-    regard:        isFr ? 'Regard'           : 'Manhole',
-    profond_c:     isFr ? 'Profondeur connue': 'Depth known',
-    profond_v:     isFr ? 'Profondeur (cm)'  : 'Depth (cm)',
-    s4_e: isFr ? '4. Installations ext.'    : '4. Exterior installations',
-    arrosage:      isFr ? 'Arrosage'         : 'Irrigation',
-    type_arr:      isFr ? 'Type arrosage'    : 'Irrigation type',
-    vannes_sec:    isFr ? 'Vannes sec.'      : 'Secondary valves',
-    vannes_loc:    isFr ? 'Loc. vannes'      : 'Valve locations',
-    s5_e: isFr ? '5. Compléments'           : '5. Additional info',
-    photos:        isFr ? 'Photos'           : 'Photos',
-    obs_client:    isFr ? 'Observations'     : 'Observations',
+    header: isFr ? "📋 QUESTIONNAIRE D'INTERVENTION — SOS FUITE D'EAU" : "📋 SERVICE REQUEST FORM — WATER LEAK",
+    divider: '════════════════════════════════════════════════',
+    dossier: isFr ? 'Dossier N°' : 'File N°',
+    type: isFr ? 'Type' : 'Type',
+    date: isFr ? 'Date' : 'Date',
+    s1_i: isFr ? '1. Origine du sinistre' : '1. Leak origin',
+    anciennete: isFr ? 'Ancienneté' : 'How long',
+    progresse: isFr ? 'Dégât progresse' : 'Damage spreading',
+    eau_coule: isFr ? 'Eau coule' : 'Water flowing',
+    alim: isFr ? 'Alimentation coupée' : 'Supply shut off',
+    fuite_arrete: isFr ? "Fuite s'arrête" : 'Leak stops',
+    s2_i: isFr ? '2. Localisation' : '2. Location',
+    zone: isFr ? 'Zone' : 'Area',
+    piece: isFr ? 'Pièce(s)' : 'Room(s)',
+    niveau: isFr ? 'Niveau' : 'Floor level',
+    s3_i: isFr ? '3. Environnement' : '3. Surroundings',
+    au_dessus: isFr ? 'Au-dessus' : 'Above',
+    en_dessous: isFr ? 'En dessous' : 'Below',
+    derriere: isFr ? 'Derrière mur' : 'Behind wall',
+    s4_i: isFr ? '4. Humidité / Indices' : '4. Moisture / Signs',
+    z_humide: isFr ? 'Zone humide' : 'Damp zone',
+    precision: isFr ? 'Précision' : 'Details',
+    odeur: isFr ? 'Odeur' : 'Smell',
+    indices: isFr ? 'Indices' : 'Signs',
+    s5_i: isFr ? '5. Installations / Travaux' : '5. Installations / Works',
+    chauffe: isFr ? 'Chauffe-eau' : 'Water heater',
+    chauffe_type: isFr ? 'Type chauffe-eau' : 'Heater type',
+    travaux: isFr ? 'Travaux récents' : 'Recent works',
+    travaux_nat: isFr ? 'Nature travaux' : 'Work nature',
+    s1_p: isFr ? "1. Origine / Perte d'eau" : '1. Origin / Water loss',
+    perte: isFr ? "Perte d'eau (cm/24h)" : 'Water loss (cm/24h)',
+    filtration: isFr ? 'Fuite se produit' : 'Leak occurs',
+    skimmer_niv: isFr ? 'Niveau/skimmers' : 'Level/skimmers',
+    s2_p: isFr ? '2. Type de piscine' : '2. Pool type',
+    revetement: isFr ? 'Revêtement' : 'Lining',
+    volume: isFr ? 'Volume (m³)' : 'Volume (m³)',
+    s3_p: isFr ? '3. Équipements' : '3. Equipment',
+    equip: isFr ? 'Équipements' : 'Equipment',
+    type_filtre: isFr ? 'Type filtre' : 'Filter type',
+    s4_p: isFr ? '4. Local technique' : '4. Equipment room',
+    local: isFr ? 'Local présent' : 'Room present',
+    local_cont: isFr ? 'Contient' : 'Contains',
+    local_autre: isFr ? 'Autre équip.' : 'Other equip.',
+    local_humid: isFr ? 'Traces humidité' : 'Moisture traces',
+    s5_p: isFr ? '5. Analyse par zone' : '5. Zone analysis',
+    skim_def: isFr ? 'Skimmers défaut' : 'Skimmer defect',
+    skim_det: isFr ? 'Précision skimmers' : 'Skimmer details',
+    microbulles: isFr ? 'Micro-bulles' : 'Micro-bubbles',
+    bonde: isFr ? 'Bonde en cause' : 'Main drain involved',
+    prise_balai: isFr ? 'Prise balai perte' : 'Vacuum point loss',
+    cana: isFr ? 'Canalis. enterrées' : 'Underground pipes',
+    plan: isFr ? 'Plan connu' : 'Plan available',
+    doc: isFr ? 'Document dispo' : 'Document available',
+    s1_t: isFr ? '1. Origine' : '1. Origin',
+    conditions: isFr ? 'Conditions' : 'Conditions',
+    zone_int: isFr ? 'Zone intérieure' : 'Interior area',
+    observations: isFr ? 'Observations' : 'Observations',
+    s1_e: isFr ? '1. Origine' : '1. Origin',
+    surconso: isFr ? 'Surconso.' : 'Overconsumption',
+    compteur_t: isFr ? 'Compteur tourne' : 'Meter running',
+    vanne: isFr ? 'Vanne testée' : 'Valve tested',
+    fuite_vis: isFr ? 'Fuite visible' : 'Visible leak',
+    loc_fuite: isFr ? 'Localisation' : 'Location',
+    s2_e: isFr ? '2. Localisation' : '2. Location',
+    distance: isFr ? 'Distance compteur' : 'Meter distance',
+    type_sol: isFr ? 'Type sol' : 'Ground type',
+    s3_e: isFr ? '3. Compteur & Réseau' : '3. Meter & Network',
+    compteur_loc: isFr ? 'Localisation compteur' : 'Meter location',
+    type_compteur: isFr ? 'Type compteur' : 'Meter type',
+    accessible: isFr ? 'Accessible' : 'Accessible',
+    regard: isFr ? 'Regard' : 'Manhole',
+    profond_c: isFr ? 'Profondeur connue' : 'Depth known',
+    profond_v: isFr ? 'Profondeur (cm)' : 'Depth (cm)',
+    s4_e: isFr ? '4. Installations ext.' : '4. Exterior installations',
+    arrosage: isFr ? 'Arrosage' : 'Irrigation',
+    type_arr: isFr ? 'Type arrosage' : 'Irrigation type',
+    vannes_sec: isFr ? 'Vannes sec.' : 'Secondary valves',
+    vannes_loc: isFr ? 'Loc. vannes' : 'Valve locations',
+    s5_e: isFr ? '5. Compléments' : '5. Additional info',
+    photos: isFr ? 'Photos' : 'Photos',
+    obs_client: isFr ? 'Observations' : 'Observations',
   };
 
   let body = L.header + '\n' + L.divider + '\n';
   body += L.dossier + ' : ' + (data.refRapport || '—') + '\n';
-  body += L.type    + '       : ' + (typeLabels[data.type] || data.type) + '\n';
-  body += L.date    + '       : ' + data.createdAt + '\n';
+  body += L.type + '       : ' + (typeLabels[data.type] || data.type) + '\n';
+  body += L.date + '       : ' + data.createdAt + '\n';
 
   if (data.type === 'interieur') {
     body += section(L.s1_i, [
-      [L.anciennete,   withAutre(data.anciennete, data.anciennete_autre)],
-      [L.progresse,    data.degat_progresse], [L.eau_coule, data.eau_coule],
-      [L.alim,         data.alim_coupee], [L.fuite_arrete, data.fuite_arrete]
+      [L.anciennete, withAutre(data.anciennete, data.anciennete_autre)],
+      [L.progresse, data.degat_progresse], [L.eau_coule, data.eau_coule],
+      [L.alim, data.alim_coupee], [L.fuite_arrete, data.fuite_arrete]
     ]);
     body += section(L.s2_i, [
-      [L.zone,   withAutre(data.zone_int, data.zone_int_autre)],
-      [L.piece,  withAutre(data.piece, data.piece_autre)],
+      [L.zone, withAutre(data.zone_int, data.zone_int_autre)],
+      [L.piece, withAutre(data.piece, data.piece_autre)],
       [L.niveau, withAutre(data.niveau, data.niveau_autre)]
     ]);
     body += section(L.s3_i, [
       [L.au_dessus, withAutre(data.au_dessus, data.au_dessus_autre)],
       [L.en_dessous, withAutre(data.en_dessous, data.en_dessous_autre)],
-      [L.derriere,   withAutre(data.derriere_mur, data.derriere_mur_autre)]
+      [L.derriere, withAutre(data.derriere_mur, data.derriere_mur_autre)]
     ]);
     body += section(L.s4_i, [
       [L.z_humide, data.zone_humide], [L.precision, data.zone_humide_precision],
       [L.odeur, data.odeur], [L.indices, data.indices]
     ]);
     body += section(L.s5_i, [
-      [L.chauffe,      data.chauffe_eau],
+      [L.chauffe, data.chauffe_eau],
       [L.chauffe_type, withAutre(data.chauffe_eau_type, data.chauffe_eau_type_autre)],
-      [L.travaux,      data.travaux],
-      [L.travaux_nat,  withAutre(data.travaux_nature, data.travaux_nature_autre)]
+      [L.travaux, data.travaux],
+      [L.travaux_nat, withAutre(data.travaux_nature, data.travaux_nature_autre)]
     ]);
   }
 
   if (data.type === 'piscine') {
     body += section(L.s1_p, [
-      [L.anciennete,  withAutre(data.p_anciennete, data.p_anciennete_autre)],
-      [L.perte,       data.perte_eau],
-      [L.filtration,  withAutre(data.filtration_etat, data.filtration_etat_autre)],
+      [L.anciennete, withAutre(data.p_anciennete, data.p_anciennete_autre)],
+      [L.perte, data.perte_eau],
+      [L.filtration, withAutre(data.filtration_etat, data.filtration_etat_autre)],
       [L.skimmer_niv, withAutre(data.niveau_skimmer, data.niveau_skimmer_autre)]
     ]);
     body += section(L.s2_p, [
@@ -977,47 +961,47 @@ function buildEmailText(data) {
       [L.local_autre, data.local_autre_equip], [L.local_humid, data.p_humidite_local]
     ]);
     body += section(L.s5_p, [
-      [L.skim_def,   withAutre(data.p_defaut_skimmer, data.p_defaut_skimmer_autre)],
-      [L.skim_det,   data.p_defaut_skimmer_detail],
-      [L.microbulles,withAutre(data.p_microbulles, data.p_microbulles_autre)],
-      [L.bonde,      withAutre(data.p_bonde_cause, data.p_bonde_cause_autre)],
-      [L.prise_balai,withAutre(data.p_prise_balai_perte, data.p_prise_balai_perte_autre)],
-      [L.cana,       data.p_cana_enterrees],
-      [L.plan,       data.p_plan_connu], [L.doc, data.p_plan_detail]
+      [L.skim_def, withAutre(data.p_defaut_skimmer, data.p_defaut_skimmer_autre)],
+      [L.skim_det, data.p_defaut_skimmer_detail],
+      [L.microbulles, withAutre(data.p_microbulles, data.p_microbulles_autre)],
+      [L.bonde, withAutre(data.p_bonde_cause, data.p_bonde_cause_autre)],
+      [L.prise_balai, withAutre(data.p_prise_balai_perte, data.p_prise_balai_perte_autre)],
+      [L.cana, data.p_cana_enterrees],
+      [L.plan, data.p_plan_connu], [L.doc, data.p_plan_detail]
     ]);
   }
 
   if (data.type === 'toiture') {
     body += section(L.s1_t, [
-      [L.anciennete,  withAutre(data.t_anciennete, data.t_anciennete_autre)],
-      [L.conditions,  withAutre(data.t_condition, data.t_condition_autre)],
-      [L.zone_int,    withAutre(data.t_zone_int, data.t_zone_int_autre)],
-      [L.observations,data.t_observations]
+      [L.anciennete, withAutre(data.t_anciennete, data.t_anciennete_autre)],
+      [L.conditions, withAutre(data.t_condition, data.t_condition_autre)],
+      [L.zone_int, withAutre(data.t_zone_int, data.t_zone_int_autre)],
+      [L.observations, data.t_observations]
     ]);
   }
 
   if (data.type === 'exterieur') {
     body += section(L.s1_e, [
-      [L.anciennete,  withAutre(data.e_anciennete, data.e_anciennete_autre)],
+      [L.anciennete, withAutre(data.e_anciennete, data.e_anciennete_autre)],
       [L.surconso, data.surconso], [L.compteur_t, data.compteur_tourne],
       [L.vanne, data.vanne_testee], [L.fuite_vis, data.fuite_visible],
       [L.loc_fuite, data.fuite_visible_loc]
     ]);
     body += section(L.s2_e, [
-      [L.zone,     withAutre(data.e_zone, data.e_zone_autre)],
+      [L.zone, withAutre(data.e_zone, data.e_zone_autre)],
       [L.distance, data.distance_compteur],
       [L.type_sol, withAutre(data.type_sol, data.type_sol_autre)]
     ]);
     body += section(L.s3_e, [
-      [L.compteur_loc,  withAutre(data.compteur_loc, data.compteur_loc_autre)],
+      [L.compteur_loc, withAutre(data.compteur_loc, data.compteur_loc_autre)],
       [L.type_compteur, withAutre(data.type_compteur, data.type_compteur_autre)],
       [L.accessible, data.compteur_accessible], [L.regard, data.regard],
       [L.profond_c, data.profondeur_connue], [L.profond_v, data.profondeur_cm]
     ]);
     body += section(L.s4_e, [
-      [L.arrosage,  data.arrosage],
-      [L.type_arr,  withAutre(data.type_arrosage, data.type_arrosage_autre)],
-      [L.vannes_sec,data.vannes_sec], [L.vannes_loc, data.vannes_loc]
+      [L.arrosage, data.arrosage],
+      [L.type_arr, withAutre(data.type_arrosage, data.type_arrosage_autre)],
+      [L.vannes_sec, data.vannes_sec], [L.vannes_loc, data.vannes_loc]
     ]);
     body += section(L.s5_e, [
       [L.photos, data.photos], [L.obs_client, data.e_observations_client]
@@ -1061,90 +1045,79 @@ document.getElementById('sendFormBtn').addEventListener('click', async () => {
       toiture:   currentLang === 'fr' ? 'Toiture'   : 'Roofing',
       exterieur: currentLang === 'fr' ? 'Extérieur' : 'Exterior'
     };
-    const emailBody = buildEmailText(data);
 
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-  to_email:   'contact@sosfuitedeau.com',
-  dossier:    data.refRapport,
-  type_inter: typeLabels[data.type] || data.type,
-  date_envoi: data.createdAt,
-
-  // === INTÉRIEUR ===
-  anciennete:        fmtVal(data.anciennete),
-  degat_progresse:   fmtVal(data.degat_progresse),
-  eau_coule:         fmtVal(data.eau_coule),
-  alim_coupee:       fmtVal(data.alim_coupee),
-  fuite_arrete:      fmtVal(data.fuite_arrete),
-  zone_int:          fmtVal(data.zone_int),
-  piece:             fmtVal(data.piece),
-  niveau:            fmtVal(data.niveau),
-  au_dessus:         fmtVal(data.au_dessus),
-  en_dessous:        fmtVal(data.en_dessous),
-  derriere_mur:      fmtVal(data.derriere_mur),
-  zone_humide:       fmtVal(data.zone_humide),
-  zone_humide_prec:  data.zone_humide_precision || '',
-  odeur:             fmtVal(data.odeur),
-  indices:           fmtVal(data.indices),
-  chauffe_eau:       fmtVal(data.chauffe_eau),
-  chauffe_type:      fmtVal(data.chauffe_eau_type),
-  travaux:           fmtVal(data.travaux),
-  travaux_nature:    fmtVal(data.travaux_nature),
-
-  // === PISCINE ===
-  p_anciennete:      fmtVal(data.p_anciennete),
-  perte_eau:         data.perte_eau || '',
-  filtration_etat:   fmtVal(data.filtration_etat),
-  niveau_skimmer:    fmtVal(data.niveau_skimmer),
-  type_piscine:      fmtVal(data.type_piscine),
-  revetement:        fmtVal(data.revetement),
-  volume_piscine:    data.volume_piscine || '',
-  equip:             fmtVal(data.equip),
-  type_filtre:       fmtVal(data.type_filtre),
-  local_technique:   fmtVal(data.local_technique),
-  local_contient:    fmtVal(data.local_contient),
-  p_humidite_local:  fmtVal(data.p_humidite_local),
-  p_defaut_skimmer:  fmtVal(data.p_defaut_skimmer),
-  p_microbulles:     fmtVal(data.p_microbulles),
-  p_bonde_cause:     fmtVal(data.p_bonde_cause),
-  p_prise_balai:     fmtVal(data.p_prise_balai_perte),
-  p_cana_enterrees:  fmtVal(data.p_cana_enterrees),
-  p_plan_connu:      fmtVal(data.p_plan_connu),
-
-  // === TOITURE ===
-  t_anciennete:      fmtVal(data.t_anciennete),
-  t_condition:       fmtVal(data.t_condition),
-  t_zone_int:        fmtVal(data.t_zone_int),
-  t_observations:    data.t_observations || '',
-
-  // === EXTÉRIEUR ===
-  e_anciennete:      fmtVal(data.e_anciennete),
-  surconso:          fmtVal(data.surconso),
-  compteur_tourne:   fmtVal(data.compteur_tourne),
-  vanne_testee:      fmtVal(data.vanne_testee),
-  fuite_visible:     fmtVal(data.fuite_visible),
-  fuite_visible_loc: data.fuite_visible_loc || '',
-  e_zone:            fmtVal(data.e_zone),
-  distance_compteur: data.distance_compteur || '',
-  type_sol:          fmtVal(data.type_sol),
-  compteur_loc:      fmtVal(data.compteur_loc),
-  type_compteur:     fmtVal(data.type_compteur),
-  compteur_accessible: fmtVal(data.compteur_accessible),
-  regard:            fmtVal(data.regard),
-  profondeur_connue: fmtVal(data.profondeur_connue),
-  profondeur_cm:     data.profondeur_cm || '',
-  arrosage:          fmtVal(data.arrosage),
-  type_arrosage:     fmtVal(data.type_arrosage),
-  vannes_sec:        fmtVal(data.vannes_sec),
-  vannes_loc:        data.vannes_loc || '',
-  e_photos:          fmtVal(data.photos),
-  e_observations:    data.e_observations_client || '',
-});
-    // ============ FORMAT VALUE ============
-function fmtVal(v) {
-  if (!v) return '—';
-  if (Array.isArray(v)) return v.length ? v.join(', ') : '—';
-  return v || '—';
-}
+      to_email:   'contact@sosfuitedeau.com',
+      dossier:    data.refRapport,
+      type_inter: typeLabels[data.type] || data.type,
+      date_envoi: data.createdAt,
+      // === INTÉRIEUR ===
+      anciennete:          fmtVal(data.anciennete),
+      degat_progresse:     fmtVal(data.degat_progresse),
+      eau_coule:           fmtVal(data.eau_coule),
+      alim_coupee:         fmtVal(data.alim_coupee),
+      fuite_arrete:        fmtVal(data.fuite_arrete),
+      zone_int:            fmtVal(data.zone_int),
+      piece:               fmtVal(data.piece),
+      niveau:              fmtVal(data.niveau),
+      au_dessus:           fmtVal(data.au_dessus),
+      en_dessous:          fmtVal(data.en_dessous),
+      derriere_mur:        fmtVal(data.derriere_mur),
+      zone_humide:         fmtVal(data.zone_humide),
+      zone_humide_prec:    data.zone_humide_precision || '',
+      odeur:               fmtVal(data.odeur),
+      indices:             fmtVal(data.indices),
+      chauffe_eau:         fmtVal(data.chauffe_eau),
+      chauffe_type:        fmtVal(data.chauffe_eau_type),
+      travaux:             fmtVal(data.travaux),
+      travaux_nature:      fmtVal(data.travaux_nature),
+      // === PISCINE ===
+      p_anciennete:        fmtVal(data.p_anciennete),
+      perte_eau:           data.perte_eau || '',
+      filtration_etat:     fmtVal(data.filtration_etat),
+      niveau_skimmer:      fmtVal(data.niveau_skimmer),
+      type_piscine:        fmtVal(data.type_piscine),
+      revetement:          fmtVal(data.revetement),
+      volume_piscine:      data.volume_piscine || '',
+      equip:               fmtVal(data.equip),
+      type_filtre:         fmtVal(data.type_filtre),
+      local_technique:     fmtVal(data.local_technique),
+      local_contient:      fmtVal(data.local_contient),
+      p_humidite_local:    fmtVal(data.p_humidite_local),
+      p_defaut_skimmer:    fmtVal(data.p_defaut_skimmer),
+      p_microbulles:       fmtVal(data.p_microbulles),
+      p_bonde_cause:       fmtVal(data.p_bonde_cause),
+      p_prise_balai:       fmtVal(data.p_prise_balai_perte),
+      p_cana_enterrees:    fmtVal(data.p_cana_enterrees),
+      p_plan_connu:        fmtVal(data.p_plan_connu),
+      // === TOITURE ===
+      t_anciennete:        fmtVal(data.t_anciennete),
+      t_condition:         fmtVal(data.t_condition),
+      t_zone_int:          fmtVal(data.t_zone_int),
+      t_observations:      data.t_observations || '',
+      // === EXTÉRIEUR ===
+      e_anciennete:        fmtVal(data.e_anciennete),
+      surconso:            fmtVal(data.surconso),
+      compteur_tourne:     fmtVal(data.compteur_tourne),
+      vanne_testee:        fmtVal(data.vanne_testee),
+      fuite_visible:       fmtVal(data.fuite_visible),
+      fuite_visible_loc:   data.fuite_visible_loc || '',
+      e_zone:              fmtVal(data.e_zone),
+      distance_compteur:   data.distance_compteur || '',
+      type_sol:            fmtVal(data.type_sol),
+      compteur_loc:        fmtVal(data.compteur_loc),
+      type_compteur:       fmtVal(data.type_compteur),
+      compteur_accessible: fmtVal(data.compteur_accessible),
+      regard:              fmtVal(data.regard),
+      profondeur_connue:   fmtVal(data.profondeur_connue),
+      profondeur_cm:       data.profondeur_cm || '',
+      arrosage:            fmtVal(data.arrosage),
+      type_arrosage:       fmtVal(data.type_arrosage),
+      vannes_sec:          fmtVal(data.vannes_sec),
+      vannes_loc:          data.vannes_loc || '',
+      e_photos:            fmtVal(data.photos),
+      e_observations:      data.e_observations_client || '',
+    });
 
     document.getElementById('successOverlay').classList.add('open');
     resetForm();
@@ -1161,13 +1134,13 @@ function fmtVal(v) {
   }
 });
 
-// ============ EFFACER / CLEAR ============
+// ============ EFFACER ============
 document.getElementById('clearFormBtn').addEventListener('click', () => {
   const msg = currentLang === 'fr' ? 'Effacer tous les champs ?' : 'Clear all fields?';
   if (confirm(msg)) resetForm();
 });
 
-// ============ NOUVEAU / NEW ============
+// ============ NOUVEAU ============
 document.getElementById('newFormBtn').addEventListener('click', () => {
   document.getElementById('successOverlay').classList.remove('open');
 });
