@@ -516,8 +516,8 @@
     }
 
     .btn-primary {
-      background: var(--green);
-      color: var(--white);
+      background: #b0ca60;
+      color: var(--navy);
       border: none;
       border-radius: var(--radius);
       padding: 13px 28px;
@@ -527,16 +527,16 @@
       cursor: pointer;
       transition: all 0.2s;
       letter-spacing: 0.01em;
-      box-shadow: 0 4px 14px rgba(255,107,26,0.40);
+      box-shadow: 0 4px 14px rgba(176,202,96,0.40);
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
     .btn-primary:hover {
-      background: var(--green-dark);
+      background: #94ae44;
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(255,107,26,0.45);
+      box-shadow: 0 8px 20px rgba(176,202,96,0.45);
     }
 
     .btn-primary:disabled {
