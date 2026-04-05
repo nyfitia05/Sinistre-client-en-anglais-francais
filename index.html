@@ -1256,7 +1256,7 @@ function resetForm() {
   document.getElementById('t_toit_pente_wrap').style.display = 'none';
 }
 
-// ===== SEND =====
+// ===== ENVOYER =====
 document.getElementById('sendFormBtn').addEventListener('click', async () => {
   const data = collectForm();
   if (!data.refRapport) {
@@ -1269,68 +1269,12 @@ document.getElementById('sendFormBtn').addEventListener('click', async () => {
   const btn = document.getElementById('sendFormBtn');
   btn.disabled = true;
   btn.querySelector('span').textContent = currentLang === 'fr' ? 'Envoi en cours…' : 'Sending…';
+
   try {
-    const typeLabels = {
-      interieur: currentLang === 'fr' ? 'Intérieur' : 'Interior',
-      piscine:   currentLang === 'fr' ? 'Piscine'   : 'Pool',
-      toiture:   currentLang === 'fr' ? 'Toiture'   : 'Roofing',
-      exterieur: currentLang === 'fr' ? 'Extérieur' : 'Exterior'
-    };
+    const htmlContent = buildHtmlEmail(data);
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      to_email:   'contact@sosfuitedeau.com',
-      dossier:    data.refRapport,
-      type_inter: typeLabels[data.type] || data.type,
-      date_envoi: data.createdAt,
-      // INTÉRIEUR
-      anciennete: fmtVal(data.anciennete), degat_progresse: fmtVal(data.degat_progresse),
-      eau_coule: fmtVal(data.eau_coule), alim_coupee: fmtVal(data.alim_coupee),
-      fuite_arrete: fmtVal(data.fuite_arrete), zone_int: fmtVal(data.zone_int),
-      piece: fmtVal(data.piece), niveau: fmtVal(data.niveau),
-      au_dessus: fmtVal(data.au_dessus), en_dessous: fmtVal(data.en_dessous),
-      derriere_mur: fmtVal(data.derriere_mur), zone_humide: fmtVal(data.zone_humide),
-      zone_humide_prec: data.zone_humide_precision || '', odeur: fmtVal(data.odeur),
-      indices: fmtVal(data.indices), chauffe_eau: fmtVal(data.chauffe_eau),
-      chauffe_type: fmtVal(data.chauffe_eau_type), travaux: fmtVal(data.travaux),
-      travaux_nature: fmtVal(data.travaux_nature),
-      // PISCINE
-      p_anciennete: fmtVal(data.p_anciennete), perte_eau: data.perte_eau || '',
-      filtration_etat: fmtVal(data.filtration_etat), niveau_skimmer: fmtVal(data.niveau_skimmer),
-      type_piscine: fmtVal(data.type_piscine), revetement: fmtVal(data.revetement),
-      volume_piscine: data.volume_piscine || '', equip: fmtVal(data.equip),
-      type_filtre: fmtVal(data.type_filtre), local_technique: fmtVal(data.local_technique),
-      local_contient: fmtVal(data.local_contient), p_humidite_local: fmtVal(data.p_humidite_local),
-      p_defaut_skimmer: fmtVal(data.p_defaut_skimmer), p_microbulles: fmtVal(data.p_microbulles),
-      p_bonde_cause: fmtVal(data.p_bonde_cause), p_prise_balai: fmtVal(data.p_prise_balai_perte),
-      p_cana_enterrees: fmtVal(data.p_cana_enterrees), p_plan_connu: fmtVal(data.p_plan_connu),
-      // TOITURE
-      t_anciennete: fmtVal(data.t_anciennete), t_condition: fmtVal(data.t_condition),
-      t_type_degat: fmtVal(data.t_type_degat), t_zone_int: fmtVal(data.t_zone_int),
-      t_piece_impactee: data.t_piece_impactee || '', t_etage: data.t_etage || '',
-      t_type_toiture: fmtVal(data.t_type_toiture), t_observations: data.t_observations || '',
-      t_surface_plat: data.t_surface_plat || '', t_etancheite_type: fmtVal(data.t_etancheite_type),
-      t_protection_etancheite: fmtVal(data.t_protection_etancheite),
-      t_isolation_etancheite: fmtVal(data.t_isolation_etancheite),
-      t_age_etancheite: fmtVal(data.t_age_etancheite), t_garde_corps: fmtVal(data.t_garde_corps),
-      t_acces_type_plat: data.t_acces_type_plat || '', t_acces_hauteur_plat: data.t_acces_hauteur_plat || '',
-      t_acces_qui_plat: data.t_acces_qui_plat || '', t_stationnement_plat: data.t_stationnement_plat || '',
-      t_surface_pente: data.t_surface_pente || '', t_pente_pct: data.t_pente_pct || '',
-      t_couverture_type: fmtVal(data.t_couverture_type), t_etat_couverture: fmtVal(data.t_etat_couverture),
-      t_sous_toiture: fmtVal(data.t_sous_toiture), t_age_couverture: fmtVal(data.t_age_couverture),
-      t_antichute: fmtVal(data.t_antichute),
-      t_acces_type_pente: data.t_acces_type_pente || '', t_acces_hauteur_pente: data.t_acces_hauteur_pente || '',
-      t_acces_qui_pente: data.t_acces_qui_pente || '', t_stationnement_pente: data.t_stationnement_pente || '',
-      // EXTÉRIEUR
-      e_anciennete: fmtVal(data.e_anciennete), surconso: fmtVal(data.surconso),
-      compteur_tourne: fmtVal(data.compteur_tourne), vanne_testee: fmtVal(data.vanne_testee),
-      fuite_visible: fmtVal(data.fuite_visible), fuite_visible_loc: data.fuite_visible_loc || '',
-      e_zone: fmtVal(data.e_zone), distance_compteur: data.distance_compteur || '',
-      type_sol: fmtVal(data.type_sol), compteur_loc: fmtVal(data.compteur_loc),
-      type_compteur: fmtVal(data.type_compteur), compteur_accessible: fmtVal(data.compteur_accessible),
-      regard: fmtVal(data.regard), profondeur_connue: fmtVal(data.profondeur_connue),
-      profondeur_cm: data.profondeur_cm || '', arrosage: fmtVal(data.arrosage),
-      type_arrosage: fmtVal(data.type_arrosage), vannes_sec: fmtVal(data.vannes_sec),
-      vannes_loc: data.vannes_loc || '', e_photos: fmtVal(data.photos),
-      e_observations: data.e_observations_client || '',
+      to_email:     'contact@sosfuitedeau.com',
+      html_content: htmlContent,
     });
     document.getElementById('successOverlay').classList.add('open');
     resetForm();
@@ -1347,6 +1291,291 @@ document.getElementById('sendFormBtn').addEventListener('click', async () => {
   }
 });
 
+// ===== CONSTRUCTION HTML EMAIL =====
+function buildHtmlEmail(data) {
+  const isFr = data.lang !== 'en';
+
+  const typeLabels = {
+    interieur: isFr ? 'Intérieur' : 'Interior',
+    piscine:   isFr ? 'Piscine'   : 'Pool',
+    toiture:   isFr ? 'Toiture'   : 'Roofing',
+    exterieur: isFr ? 'Extérieur' : 'Exterior',
+  };
+
+  // Styles partagés
+  const S = {
+    wrap:    'background:#f0f0f0;padding:30px 0;font-family:Segoe UI,Arial,sans-serif;',
+    card:    'width:620px;background:#ffffff;border-radius:14px;overflow:hidden;',
+    header:  'background:#ff6c16;padding:28px 32px;text-align:center;',
+    h1:      'margin:0;font-size:24px;font-weight:700;color:#ffffff;',
+    sub:     'margin:8px 0 0;font-size:13px;color:rgba(255,255,255,0.85);',
+    resume:  'margin:24px 32px 0;background:#fff7f2;border:1.5px solid #ff6c16;border-radius:10px;padding:16px 20px;',
+    secTag:  'margin:20px 32px 0;border-left:3px solid #ff6c16;',
+    secLbl:  'padding:8px 14px;background:#fff7f2;margin:0;font-size:11px;font-weight:700;color:#ff6c16;text-transform:uppercase;letter-spacing:0.1em;',
+    block:   'margin:12px 32px 0;border:1px solid #e8e8e8;border-radius:10px;overflow:hidden;',
+    bHead:   'background:#ff6c16;padding:11px 16px;',
+    bTitle:  'margin:0;font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.07em;',
+    bBody:   'padding:14px 16px;',
+    tdLbl:   'font-size:12px;color:#888;font-weight:600;padding:5px 0;width:45%;',
+    tdVal:   'font-size:13px;color:#1a1a1a;font-weight:500;padding:5px 0;',
+    tdLblB:  'font-size:12px;color:#888;font-weight:600;padding:5px 8px;width:45%;background:#f8f8f8;',
+    tdValB:  'font-size:13px;color:#1a1a1a;font-weight:500;padding:5px 8px;background:#f8f8f8;',
+    footer:  'background:#1a1a1a;padding:22px 32px;text-align:center;',
+  };
+
+  // Helpers
+  function val(v) {
+    if (!v || v === '' || v === '—') return null;
+    if (Array.isArray(v)) return v.length ? v.join(', ') : null;
+    return v;
+  }
+
+  // Construit un bloc de section avec titre et lignes label/valeur
+  // lignes = array de [label, valeur]
+  // Filtre automatiquement les valeurs vides
+  function bloc(titre, lignes, accentColor) {
+    const color = accentColor || '#ff6c16';
+    const rows = lignes
+      .filter(([, v]) => val(v) !== null)
+      .map(([lbl, v], i) => {
+        const bg = i % 2 === 1 ? '#f8f8f8' : '#ffffff';
+        return `<tr style="background:${bg};">
+          <td style="font-size:12px;color:#888;font-weight:600;padding:5px 8px;width:45%;">${lbl}</td>
+          <td style="font-size:13px;color:#1a1a1a;font-weight:500;padding:5px 8px;">${val(v)}</td>
+        </tr>`;
+      });
+    if (!rows.length) return '';
+    return `
+      <div style="${S.block}">
+        <div style="background:${color};padding:11px 16px;">
+          <p style="${S.bTitle}">${titre}</p>
+        </div>
+        <div style="${S.bBody}">
+          <table width="100%" cellpadding="0" cellspacing="0">${rows.join('')}</table>
+        </div>
+      </div>`;
+  }
+
+  function sectionTag(label) {
+    return `<div style="${S.secTag}"><p style="${S.secLbl}">${label}</p></div>`;
+  }
+
+  // ===== SECTIONS PAR TYPE =====
+  let sections = '';
+
+  if (data.type === 'interieur') {
+    sections += bloc('① Origine du sinistre', [
+      [isFr ? 'Ancienneté' : 'How long ago', data.anciennete],
+      [isFr ? 'Dégât progresse' : 'Damage spreading', data.degat_progresse],
+      [isFr ? 'Eau coule actuellement' : 'Water currently flowing', data.eau_coule],
+      [isFr ? 'Alimentation coupée' : 'Water supply shut off', data.alim_coupee],
+      [isFr ? 'Fuite s\'arrête eau coupée' : 'Leak stops when off', data.fuite_arrete],
+    ]);
+    sections += bloc('② Localisation du sinistre', [
+      [isFr ? 'Zone concernée' : 'Affected area', data.zone_int],
+      [isFr ? 'Pièce(s)' : 'Room(s)', data.piece],
+      [isFr ? 'Niveau / étage' : 'Floor level', data.niveau],
+    ]);
+    sections += bloc('③ Environnement', [
+      [isFr ? 'Au-dessus' : 'Above', data.au_dessus],
+      [isFr ? 'En dessous' : 'Below', data.en_dessous],
+      [isFr ? 'Derrière le mur' : 'Behind wall', data.derriere_mur],
+    ]);
+    sections += bloc('④ Humidité / Indices', [
+      [isFr ? 'Zone humide' : 'Damp zone', data.zone_humide],
+      [isFr ? 'Précision' : 'Details', data.zone_humide_precision],
+      [isFr ? 'Odeur d\'humidité' : 'Musty smell', data.odeur],
+      [isFr ? 'Indices visibles' : 'Visible signs', data.indices],
+    ]);
+    sections += bloc('⑤ Installations / Travaux', [
+      [isFr ? 'Chauffe-eau / ballon' : 'Water heater', data.chauffe_eau],
+      [isFr ? 'Type' : 'Type', data.chauffe_eau_type],
+      [isFr ? 'Travaux récents' : 'Recent works', data.travaux],
+      [isFr ? 'Nature des travaux' : 'Nature of works', data.travaux_nature],
+    ]);
+  }
+
+  else if (data.type === 'piscine') {
+    sections += bloc('① Perte d\'eau', [
+      [isFr ? 'Ancienneté' : 'How long ago', data.p_anciennete],
+      [isFr ? 'Perte estimée (cm/24h)' : 'Estimated loss', data.perte_eau],
+      [isFr ? 'État filtration' : 'Filtration state', data.filtration_etat],
+      [isFr ? 'Niveau s\'arrête sous skimmers' : 'Level stops at skimmers', data.niveau_skimmer],
+    ]);
+    sections += bloc('② Type de piscine', [
+      [isFr ? 'Type' : 'Type', data.type_piscine],
+      [isFr ? 'Revêtement / structure' : 'Lining', data.revetement],
+      [isFr ? 'Volume (m³)' : 'Volume (m³)', data.volume_piscine],
+    ]);
+    sections += bloc('③ Équipements', [
+      [isFr ? 'Équipements présents' : 'Equipment', data.equip],
+      [isFr ? 'Type de filtre' : 'Filter type', data.type_filtre],
+    ]);
+    sections += bloc('④ Local technique', [
+      [isFr ? 'Présent' : 'Present', data.local_technique],
+      [isFr ? 'Contient' : 'Contains', data.local_contient],
+      [isFr ? 'Autre équipement' : 'Other equipment', data.local_autre_equip],
+      [isFr ? 'Traces d\'humidité' : 'Moisture traces', data.p_humidite_local],
+    ]);
+    sections += bloc('⑤ Analyse technique par zone', [
+      [isFr ? 'Défaut skimmer' : 'Skimmer defect', data.p_defaut_skimmer],
+      [isFr ? 'Précision skimmers' : 'Skimmer details', data.p_defaut_skimmer_detail],
+      [isFr ? 'Micro-bulles refoulements' : 'Micro-bubbles', data.p_microbulles],
+      [isFr ? 'Bonde de fond en cause' : 'Main drain involved', data.p_bonde_cause],
+      [isFr ? 'Prise balai perte pompe' : 'Vacuum point loss', data.p_prise_balai_perte],
+      [isFr ? 'Canalisations enterrées' : 'Underground pipes', data.p_cana_enterrees],
+      [isFr ? 'Plan / schéma connu' : 'Layout plan', data.p_plan_connu],
+      [isFr ? 'Document disponible' : 'Document available', data.p_plan_detail],
+    ]);
+  }
+
+  else if (data.type === 'toiture') {
+    sections += bloc('① Origine du problème', [
+      [isFr ? 'Ancienneté' : 'How long ago', data.t_anciennete],
+      [isFr ? 'Conditions d\'apparition' : 'Conditions', data.t_condition],
+      [isFr ? 'Type de dégât' : 'Damage type', data.t_type_degat],
+      [isFr ? 'Zone intérieure impactée' : 'Affected interior', data.t_zone_int],
+      [isFr ? 'Pièce impactée' : 'Affected room', data.t_piece_impactee],
+      [isFr ? 'Étage' : 'Floor', data.t_etage],
+      [isFr ? 'Type de toiture' : 'Roof type', data.t_type_toiture],
+      [isFr ? 'Observations' : 'Observations', data.t_observations],
+    ]);
+
+    // Module A — toit plat
+    const platChecked = Array.isArray(data.t_type_toiture)
+      ? data.t_type_toiture.includes('toit_plat')
+      : data.t_type_toiture === 'toit_plat';
+    if (platChecked) {
+      sections += bloc('Module A — Toit plat : Surface &amp; Composition', [
+        [isFr ? 'Surface (m²)' : 'Surface (m²)', data.t_surface_plat],
+        [isFr ? 'Type d\'étanchéité' : 'Waterproofing type', data.t_etancheite_type],
+        [isFr ? 'Protection' : 'Protection', data.t_protection_etancheite],
+        [isFr ? 'Isolation sous étanchéité' : 'Insulation', data.t_isolation_etancheite],
+        [isFr ? 'Âge étanchéité' : 'Age', data.t_age_etancheite],
+      ], '#e05e10');
+      sections += bloc('Module A — Toit plat : Sécurité &amp; Accès', [
+        [isFr ? 'Garde-corps' : 'Guardrails', data.t_garde_corps],
+        [isFr ? 'Lignes de vie' : 'Lifelines', data.t_lignes_vie_plat],
+        [isFr ? 'Points d\'ancrage' : 'Anchor points', data.t_ancrage_plat],
+        [isFr ? 'Type d\'accès' : 'Access type', data.t_acces_type_plat],
+        [isFr ? 'Hauteur d\'accès' : 'Access height', data.t_acces_hauteur_plat],
+        [isFr ? 'Échelle sur place' : 'Ladder on site', data.t_echelle_plat],
+        [isFr ? 'Qui donne l\'accès' : 'Who provides access', data.t_acces_qui_plat],
+        [isFr ? 'Stationnement' : 'Parking', data.t_stationnement_plat],
+      ], '#e05e10');
+    }
+
+    // Module B — toit en pente
+    const penteChecked = Array.isArray(data.t_type_toiture)
+      ? data.t_type_toiture.includes('toit_pente')
+      : data.t_type_toiture === 'toit_pente';
+    if (penteChecked) {
+      sections += bloc('Module B — Toit en pente : Surface &amp; Composition', [
+        [isFr ? 'Surface (m²)' : 'Surface (m²)', data.t_surface_pente],
+        [isFr ? 'Pente (%)' : 'Slope (%)', data.t_pente_pct],
+        [isFr ? 'Type de couverture' : 'Covering type', data.t_couverture_type],
+        [isFr ? 'État couverture' : 'Condition', data.t_etat_couverture],
+        [isFr ? 'Sous-toiture' : 'Underlay', data.t_sous_toiture],
+        [isFr ? 'Âge couverture' : 'Age', data.t_age_couverture],
+      ], '#e05e10');
+      sections += bloc('Module B — Toit en pente : Sécurité &amp; Accès', [
+        [isFr ? 'Dispositifs antichute' : 'Fall protection', data.t_antichute],
+        [isFr ? 'Type d\'accès' : 'Access type', data.t_acces_type_pente],
+        [isFr ? 'Hauteur d\'accès' : 'Access height', data.t_acces_hauteur_pente],
+        [isFr ? 'Échelle sur place' : 'Ladder on site', data.t_echelle_pente],
+        [isFr ? 'Qui donne l\'accès' : 'Who provides access', data.t_acces_qui_pente],
+        [isFr ? 'Stationnement' : 'Parking', data.t_stationnement_pente],
+      ], '#e05e10');
+    }
+  }
+
+  else if (data.type === 'exterieur') {
+    sections += bloc('① Origine du problème', [
+      [isFr ? 'Ancienneté' : 'How long ago', data.e_anciennete],
+      [isFr ? 'Surconsommation d\'eau' : 'Water overconsumption', data.surconso],
+      [isFr ? 'Compteur tourne (fermé)' : 'Meter running (off)', data.compteur_tourne],
+      [isFr ? 'Vanne générale testée' : 'Main valve tested', data.vanne_testee],
+      [isFr ? 'Fuite visible' : 'Visible leak', data.fuite_visible],
+      [isFr ? 'Localisation fuite visible' : 'Leak location', data.fuite_visible_loc],
+    ]);
+    sections += bloc('② Localisation extérieure', [
+      [isFr ? 'Zone concernée' : 'Affected area', data.e_zone],
+      [isFr ? 'Distance compteur → maison (m)' : 'Distance meter → house', data.distance_compteur],
+      [isFr ? 'Type de sol' : 'Ground type', data.type_sol],
+    ]);
+    sections += bloc('③ Compteur &amp; Réseau', [
+      [isFr ? 'Localisation compteur' : 'Meter location', data.compteur_loc],
+      [isFr ? 'Type de compteur' : 'Meter type', data.type_compteur],
+      [isFr ? 'Compteur accessible' : 'Meter accessible', data.compteur_accessible],
+      [isFr ? 'Regard / trappe' : 'Manhole / hatch', data.regard],
+      [isFr ? 'Profondeur connue' : 'Depth known', data.profondeur_connue],
+      [isFr ? 'Profondeur estimée (cm)' : 'Estimated depth', data.profondeur_cm],
+    ]);
+    sections += bloc('④ Installations extérieures', [
+      [isFr ? 'Arrosage' : 'Irrigation', data.arrosage],
+      [isFr ? 'Type d\'arrosage' : 'Irrigation type', data.type_arrosage],
+      [isFr ? 'Vannes secondaires' : 'Secondary valves', data.vannes_sec],
+      [isFr ? 'Localisation des vannes' : 'Valve locations', data.vannes_loc],
+    ]);
+    sections += bloc('⑤ Éléments complémentaires', [
+      [isFr ? 'Photos disponibles' : 'Photos available', data.photos],
+      [isFr ? 'Observations client' : 'Client observations', data.e_observations_client],
+    ]);
+  }
+
+  // ===== ASSEMBLAGE HTML FINAL =====
+  return `<!DOCTYPE html>
+<html lang="${data.lang}">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
+<body style="margin:0;padding:0;background:#f0f0f0;font-family:Segoe UI,Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f0f0;padding:30px 0;">
+<tr><td align="center">
+<table width="620" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
+
+  <!-- HEADER -->
+  <tr><td style="background:#ff6c16;padding:28px 32px;text-align:center;">
+    <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.7);font-weight:600;">SOS FUITE D'EAU</p>
+    <h1 style="margin:0;font-size:22px;font-weight:700;color:#fff;">${isFr ? 'Nouveau questionnaire reçu' : 'New questionnaire received'}</h1>
+    <p style="margin:8px 0 0;font-size:13px;color:rgba(255,255,255,0.85);">${isFr ? 'Transmis automatiquement depuis le formulaire client' : 'Automatically sent from the client form'}</p>
+  </td></tr>
+
+  <!-- RÉSUMÉ -->
+  <tr><td style="padding:0 32px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:20px 0 4px;background:#fff7f2;border:1.5px solid #ff6c16;border-radius:10px;">
+      <tr><td style="padding:16px 20px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td width="50%">
+              <p style="margin:0;font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">${isFr ? 'Email client' : 'Client email'}</p>
+              <p style="margin:4px 0 0;font-size:15px;font-weight:700;color:#ff6c16;">${data.refRapport}</p>
+            </td>
+            <td width="50%" style="text-align:right;">
+              <p style="margin:0;font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">${isFr ? 'Type d\'intervention' : 'Service type'}</p>
+              <p style="margin:4px 0 0;font-size:15px;font-weight:700;color:#1a1a1a;">${typeLabels[data.type]}</p>
+            </td>
+          </tr>
+          <tr><td colspan="2" style="padding-top:12px;border-top:1px solid #ffe0cc;">
+            <p style="margin:0;font-size:12px;color:#aaa;">${isFr ? 'Date d\'envoi' : 'Sent on'} : <strong style="color:#666;">${data.createdAt}</strong></p>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </td></tr>
+
+  <!-- SECTIONS DYNAMIQUES -->
+  <tr><td style="padding:0 0 28px;">${sections}</td></tr>
+
+  <!-- FOOTER -->
+  <tr><td style="background:#1a1a1a;padding:20px 32px;text-align:center;">
+    <p style="margin:0 0 4px;font-size:13px;font-weight:700;color:#ff6c16;letter-spacing:0.05em;">SOS FUITE D'EAU</p>
+    <p style="margin:0;font-size:11px;color:#888;">contact@sosfuitedeau.com — ${isFr ? 'Message généré automatiquement' : 'Automatically generated message'}</p>
+  </td></tr>
+
+</table>
+</td></tr>
+</table>
+</body></html>`;
+}
 // ===== EFFACER =====
 document.getElementById('clearFormBtn').addEventListener('click', () => {
   const msg = currentLang === 'fr' ? 'Effacer tous les champs ?' : 'Clear all fields?';
