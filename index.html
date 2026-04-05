@@ -40,8 +40,22 @@
 
     /* ===== HEADER ===== */
     .site-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 20px; }
-    .header-inner { display: flex; align-items: flex-start; gap: 16px; max-width: 720px; margin: 0 auto; }
-    .header-logo { width: 54px; height: 54px; object-fit: contain; border-radius: 10px; flex-shrink: 0; }
+.header-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.header-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-logo { width: 54px; height: 54px; object-fit: contain; border-radius: 10px; flex-shrink: 0; }
     .header-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: .04em; margin-bottom: 6px; }
     .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
     .header-sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
@@ -131,7 +145,7 @@
     .submit-info { font-size: 13px; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; }
     .submit-info strong { color: var(--text); font-size: 14px; }
     .form-btns { display: flex; gap: 10px; }
-    .btn-primary { display: flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); padding: 11px 20px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; flex: 1; justify-content: center; transition: opacity .2s; }
+    .btn-primary { display: flex; align-items: center; gap: 6px; background: #a9c946; color: #fff; border: none; border-radius: var(--radius-sm); padding: 11px 20px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; flex: 1; justify-content: center; transition: opacity .2s; }
     .btn-primary:hover { opacity: .88; }
     .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
     .btn-secondary { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); border-radius: var(--radius-sm); padding: 11px 16px; font-family: inherit; font-size: 13px; cursor: pointer; transition: all .2s; }
@@ -183,7 +197,7 @@
         <span data-fr="Formulaire d'intervention" data-en="Intervention Form">Formulaire d'intervention</span>
       </div>
       <p class="header-sub">
-        <span data-fr="Remplissez ce questionnaire pour décrire votre problème. Les informations seront transmises directement à notre équipe." data-en="Fill in this questionnaire to describe your problem. The information will be sent directly to our team.">Remplissez ce questionnaire pour décrire votre problème. Les informations seront transmises directement à notre équipe.</span>
+        <span data-fr="Remplissez ce questionnaire pour décrire votre problème. Les informations seront transmises directement à notre équipe." data-en="Fill in this questionnaire to describe your problem. The information will be sent directly to our team.">Remplissez ce questionnaire pour décrire votre problème. <br> Les informations seront transmises directement à notre équipe.</span>
       </p>
     </div>
   </div>
