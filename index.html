@@ -11,14 +11,14 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --accent: #ff6c16;
-      --accent-light: rgba(255,108,22,0.12);
+      --accent-light: rgba(255,108,22,0.10);
       --accent-mid: rgba(255,108,22,0.25);
-      --bg: #ffffff;
-      --surface: #1a1a1a;
-      --surface2: #222;
-      --border: #2e2e2e;
-      --text: #e8e8e8;
-      --text-muted: #888;
+      --bg: #f4f4f4;
+      --surface: #ffffff;
+      --surface2: #f8f8f8;
+      --border: #e0e0e0;
+      --text: #1a1a1a;
+      --text-muted: #777;
       --radius: 12px;
       --radius-sm: 8px;
     }
@@ -26,8 +26,15 @@
     body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
 
     /* ===== LANG BAR ===== */
-    .lang-bar { display: flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--surface); border-bottom: 1px solid var(--border); }
-    .lang-label { font-size: 12px; color: var(--text-muted); }
+.lang-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--accent);
+    border-bottom: 1px solid var(--accent);
+}
+    .lang-label { font-size: 12px; color: white; }
     .lang-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); border-radius: 6px; padding: 3px 10px; font-size: 12px; cursor: pointer; transition: all .2s; }
     .lang-btn.active, .lang-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
 
@@ -43,9 +50,17 @@
     .main-wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; }
 
     /* ===== DOSSIER ===== */
-    .dossier-card { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 18px; }
-    .dossier-label { font-size: 11px; color: var(--text-muted); font-weight: 500; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 5px; }
-    .dossier-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text); font-family: inherit; font-size: 14px; padding: 4px 0; outline: none; transition: border-color .2s; }
+    .dossier-card {     display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 18px;
+}
+    .dossier-label { font-size: 11px; color: white; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 5px; }
+    .dossier-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); color: white; font-family: inherit; font-size: 14px; padding: 4px 0; outline: none; transition: border-color .2s; }
     .dossier-input:focus { border-color: var(--accent); }
 
     /* ===== TYPE SECTION ===== */
@@ -62,8 +77,18 @@
 
     /* ===== FORM CARD ===== */
     .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-    .form-card-header { display: flex; align-items: center; gap: 10px; padding: 13px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--text); }
-    .step-num { width: 22px; height: 22px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .form-card-header {     
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 16px;
+    background: var(--accent);
+    border-bottom: 1px solid var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+   }
+    .step-num { width: 22px; height: 22px; background: #ff8f4e; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
     .form-card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
 
     /* ===== CHECK GROUP ===== */
@@ -155,7 +180,7 @@
     <div class="header-text">
       <div class="header-badge">
         <span class="dot"></span>
-        <span data-fr="Formulaire d'intervention" data-en="Intervention Form">Formulaire d'interventiondddddddddddddddddddddd</span>
+        <span data-fr="Formulaire d'intervention" data-en="Intervention Form">Formulaire d'intervention</span>
       </div>
       <p class="header-sub">
         <span data-fr="Remplissez ce questionnaire pour décrire votre problème. Les informations seront transmises directement à notre équipe." data-en="Fill in this questionnaire to describe your problem. The information will be sent directly to our team.">Remplissez ce questionnaire pour décrire votre problème. Les informations seront transmises directement à notre équipe.</span>
