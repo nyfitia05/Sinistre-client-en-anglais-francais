@@ -4,9 +4,140 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title data-fr="Questionnaire client" data-en="Client Questionnaire">Questionnaire client</title>
-  <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #ff6c16;
+      --accent-light: rgba(255,108,22,0.12);
+      --accent-mid: rgba(255,108,22,0.25);
+      --bg: #ffffff;
+      --surface: #1a1a1a;
+      --surface2: #222;
+      --border: #2e2e2e;
+      --text: #e8e8e8;
+      --text-muted: #888;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+    html { font-size: 15px; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+    /* ===== LANG BAR ===== */
+    .lang-bar { display: flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--surface); border-bottom: 1px solid var(--border); }
+    .lang-label { font-size: 12px; color: var(--text-muted); }
+    .lang-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); border-radius: 6px; padding: 3px 10px; font-size: 12px; cursor: pointer; transition: all .2s; }
+    .lang-btn.active, .lang-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* ===== HEADER ===== */
+    .site-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 20px; }
+    .header-inner { display: flex; align-items: flex-start; gap: 16px; max-width: 720px; margin: 0 auto; }
+    .header-logo { width: 54px; height: 54px; object-fit: contain; border-radius: 10px; flex-shrink: 0; }
+    .header-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: .04em; margin-bottom: 6px; }
+    .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+    .header-sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ===== MAIN ===== */
+    .main-wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; }
+
+    /* ===== DOSSIER ===== */
+    .dossier-card { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 18px; }
+    .dossier-label { font-size: 11px; color: var(--text-muted); font-weight: 500; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 5px; }
+    .dossier-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text); font-family: inherit; font-size: 14px; padding: 4px 0; outline: none; transition: border-color .2s; }
+    .dossier-input:focus { border-color: var(--accent); }
+
+    /* ===== TYPE SECTION ===== */
+    .type-section { margin-bottom: 22px; }
+    .section-label { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; }
+    .type-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+    .type-btn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 6px; color: var(--text-muted); font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer; transition: all .2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .type-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .type-btn.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+    /* ===== PANELS ===== */
+    .panel { display: none; flex-direction: column; gap: 16px; }
+    .panel.active { display: flex; }
+
+    /* ===== FORM CARD ===== */
+    .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .form-card-header { display: flex; align-items: center; gap: 10px; padding: 13px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--text); }
+    .step-num { width: 22px; height: 22px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .form-card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+
+    /* ===== CHECK GROUP ===== */
+    .check-group { display: flex; flex-direction: column; gap: 6px; }
+    .check-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .checks-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .checkbox-item { display: flex; align-items: center; gap: 5px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: 12px; color: var(--text); transition: all .15s; user-select: none; }
+    .checkbox-item:hover { border-color: var(--accent); color: var(--accent); }
+    .checkbox-item input[type="checkbox"] { accent-color: var(--accent); width: 13px; height: 13px; cursor: pointer; }
+    .checkbox-item:has(input:checked) { background: var(--accent-light); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+
+    /* ===== PRECISER ===== */
+    .preciser-field { display: none; margin-top: 4px; }
+    .preciser-field.visible { display: block; }
+    .preciser-field input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; color: var(--text); font-family: inherit; font-size: 12px; outline: none; transition: border-color .2s; }
+    .preciser-field input:focus { border-color: var(--accent); }
+
+    /* ===== FIELD GROUP ===== */
+    .field-group { display: flex; flex-direction: column; gap: 5px; }
+    .field-group label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .field-group input, .field-group textarea, .field-group select {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 6px;
+      padding: 7px 10px; color: var(--text); font-family: inherit; font-size: 13px;
+      outline: none; transition: border-color .2s; width: 100%;
+    }
+    .field-group input:focus, .field-group textarea:focus, .field-group select:focus { border-color: var(--accent); }
+    .field-group textarea { resize: vertical; min-height: 70px; }
+    .field-group select option { background: var(--surface2); }
+
+    /* ===== EQUIP GRID ===== */
+    .equip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .equip-item { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 12px; color: var(--text); transition: all .15s; user-select: none; }
+    .equip-item:hover { border-color: var(--accent); }
+    .equip-item input[type="checkbox"] { accent-color: var(--accent); width: 13px; height: 13px; }
+    .equip-item:has(input[type="checkbox"]:checked) { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+    .qte-input { width: 48px; margin-left: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; color: var(--text); font-family: inherit; font-size: 11px; outline: none; text-align: center; }
+
+    /* ===== SUBMIT ===== */
+    .submit-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 8px; display: flex; flex-direction: column; gap: 14px; }
+    .submit-info { font-size: 13px; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; }
+    .submit-info strong { color: var(--text); font-size: 14px; }
+    .form-btns { display: flex; gap: 10px; }
+    .btn-primary { display: flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); padding: 11px 20px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; flex: 1; justify-content: center; transition: opacity .2s; }
+    .btn-primary:hover { opacity: .88; }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-secondary { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); border-radius: var(--radius-sm); padding: 11px 16px; font-family: inherit; font-size: 13px; cursor: pointer; transition: all .2s; }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ===== SUCCESS OVERLAY ===== */
+    .success-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+    .success-overlay.open { display: flex; }
+    .success-card { background: var(--surface); border: 1px solid var(--accent); border-radius: var(--radius); padding: 32px 24px; max-width: 380px; width: 100%; text-align: center; display: flex; flex-direction: column; gap: 14px; }
+    .success-icon { width: 56px; height: 56px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; margin: 0 auto; }
+    .success-title { font-size: 20px; font-weight: 700; }
+    .success-sub { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+    /* ===== TOAST ===== */
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 18px; font-size: 13px; color: var(--text); opacity: 0; transition: all .3s; pointer-events: none; z-index: 200; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.error { border-color: #e53e3e; color: #fc8181; }
+
+    /* ===== SUB-SECTION TITLE (for toiture modules) ===== */
+    .sub-section-title {
+      font-size: 13px; font-weight: 700; color: var(--accent);
+      text-transform: uppercase; letter-spacing: .06em;
+      padding: 10px 0 4px;
+      border-bottom: 1px solid var(--accent-mid);
+      margin-bottom: 4px;
+    }
+    .module-label {
+      font-size: 11px; color: var(--text-muted); font-style: italic;
+      margin-bottom: 4px;
+    }
+  </style>
 </head>
 <body>
 
@@ -449,6 +580,8 @@
 
     <!-- ======== TOITURE ======== -->
     <div class="panel" id="panel-toiture">
+
+      <!-- CARTE 1 : Origine du problème (existante) -->
       <div class="form-card">
         <div class="form-card-header"><span class="step-num">1</span> <span data-fr="Origine du problème" data-en="Origin of the problem">Origine du problème</span></div>
         <div class="form-card-body">
@@ -458,6 +591,7 @@
               <label class="checkbox-item"><input type="checkbox" name="t_anciennete" value="moins24h"/> <span data-fr="&lt;24h" data-en="&lt;24h">&lt;24h</span></label>
               <label class="checkbox-item"><input type="checkbox" name="t_anciennete" value="2-7j"/> <span data-fr="2–7j" data-en="2–7d">2–7j</span></label>
               <label class="checkbox-item"><input type="checkbox" name="t_anciennete" value="plus7j"/> <span data-fr="&gt;7j" data-en="&gt;7d">&gt;7j</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="t_anciennete" value="inconnu"/> <span data-fr="Inconnu" data-en="Unknown">Inconnu</span></label>
               <label class="checkbox-item"><input type="checkbox" name="t_anciennete" value="autre" class="triggers-preciser" data-target="t_anciennete_autre_wrap"/> <span data-fr="Autre" data-en="Other">Autre</span></label>
             </div>
             <div class="preciser-field" id="t_anciennete_autre_wrap"><input type="text" name="t_anciennete_autre" placeholder="Préciser…" data-ph-fr="Préciser…" data-ph-en="Specify…" /></div>
@@ -465,14 +599,26 @@
           <div class="check-group">
             <label class="check-label" data-fr="Les infiltrations apparaissent :" data-en="Infiltrations appear:">Les infiltrations apparaissent :</label>
             <div class="checks-row">
-              <label class="checkbox-item"><input type="checkbox" name="t_condition" value="fortes_pluies"/> <span data-fr="Fortes pluies" data-en="Heavy rain">Fortes pluies</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="t_condition" value="fortes_pluies"/> <span data-fr="Après fortes pluies" data-en="After heavy rain">Après fortes pluies</span></label>
               <label class="checkbox-item"><input type="checkbox" name="t_condition" value="pluies_continues"/> <span data-fr="Pluies continues" data-en="Continuous rain">Pluies continues</span></label>
               <label class="checkbox-item"><input type="checkbox" name="t_condition" value="vent_pluie"/> <span data-fr="Vent + pluie" data-en="Wind + rain">Vent + pluie</span></label>
               <label class="checkbox-item"><input type="checkbox" name="t_condition" value="fonte_neige"/> <span data-fr="Fonte de neige" data-en="Snow melt">Fonte de neige</span></label>
               <label class="checkbox-item"><input type="checkbox" name="t_condition" value="permanente"/> <span data-fr="Permanente" data-en="Permanent">Permanente</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="t_condition" value="inconnue"/> <span data-fr="Inconnue" data-en="Unknown">Inconnue</span></label>
               <label class="checkbox-item"><input type="checkbox" name="t_condition" value="autre" class="triggers-preciser" data-target="t_condition_autre_wrap"/> <span data-fr="Autre" data-en="Other">Autre</span></label>
             </div>
             <div class="preciser-field" id="t_condition_autre_wrap"><input type="text" name="t_condition_autre" placeholder="Préciser…" data-ph-fr="Préciser…" data-ph-en="Specify…" /></div>
+          </div>
+          <div class="check-group">
+            <label class="check-label" data-fr="Type de dégât :" data-en="Type of damage:">Type de dégât :</label>
+            <div class="checks-row">
+              <label class="checkbox-item"><input type="checkbox" name="t_type_degat" value="ecoulements"/> <span data-fr="Écoulements" data-en="Flows">Écoulements</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="t_type_degat" value="aureoles"/> <span data-fr="Auréoles" data-en="Stains">Auréoles</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="t_type_degat" value="moisissures"/> <span data-fr="Moisissures" data-en="Mold">Moisissures</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="t_type_degat" value="cloques"/> <span data-fr="Cloques" data-en="Blisters">Cloques</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="t_type_degat" value="autre" class="triggers-preciser" data-target="t_type_degat_autre_wrap"/> <span data-fr="Autre" data-en="Other">Autre</span></label>
+            </div>
+            <div class="preciser-field" id="t_type_degat_autre_wrap"><input type="text" name="t_type_degat_autre" placeholder="Préciser…" data-ph-fr="Préciser…" data-ph-en="Specify…" /></div>
           </div>
           <div class="check-group">
             <label class="check-label" data-fr="Zone intérieure impactée :" data-en="Affected interior area:">Zone intérieure impactée :</label>
@@ -484,9 +630,193 @@
             </div>
             <div class="preciser-field" id="t_zone_int_autre_wrap"><input type="text" name="t_zone_int_autre" placeholder="Préciser…" data-ph-fr="Préciser…" data-ph-en="Specify…" /></div>
           </div>
+          <div class="field-group">
+            <label data-fr="Pièce impactée" data-en="Affected room">Pièce impactée</label>
+            <input type="text" name="t_piece_impactee" placeholder="Ex : salon, chambre…" data-ph-fr="Ex : salon, chambre…" data-ph-en="E.g.: living room, bedroom…" />
+          </div>
+          <div class="field-group">
+            <label data-fr="Étage" data-en="Floor">Étage</label>
+            <input type="text" name="t_etage" placeholder="Ex : RDC, 1er étage…" data-ph-fr="Ex : RDC, 1er étage…" data-ph-en="E.g.: ground floor, 1st floor…" />
+          </div>
+          <div class="check-group">
+            <label class="check-label" data-fr="Type de toiture :" data-en="Roof type:">Type de toiture :</label>
+            <div class="checks-row">
+              <label class="checkbox-item"><input type="checkbox" name="t_type_toiture" value="toit_plat" class="triggers-preciser" data-target="t_toit_plat_wrap"/> <span data-fr="Toit plat" data-en="Flat roof">Toit plat</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="t_type_toiture" value="toit_pente" class="triggers-preciser" data-target="t_toit_pente_wrap"/> <span data-fr="Toit en pente" data-en="Pitched roof">Toit en pente</span></label>
+            </div>
+          </div>
           <div class="field-group"><label data-fr="Observations complémentaires" data-en="Additional observations">Observations complémentaires</label><textarea name="t_observations" rows="3"></textarea></div>
         </div>
       </div>
+
+      <!-- MODULE A — TOIT PLAT -->
+      <div class="preciser-field" id="t_toit_plat_wrap" style="display:none">
+        <div class="form-card">
+          <div class="form-card-header"><span class="step-num" style="background:#e05e10">A</span> <span data-fr="🧱 MODULE A — Toit plat" data-en="🧱 MODULE A — Flat roof">🧱 MODULE A — Toit plat</span></div>
+          <div class="form-card-body">
+            <p class="module-label" data-fr="(À compléter uniquement si toiture plate)" data-en="(Complete only if flat roof)">(À compléter uniquement si toiture plate)</p>
+
+            <div class="sub-section-title" data-fr="A1 — Surface &amp; Composition" data-en="A1 — Surface &amp; Composition">A1 — Surface &amp; Composition</div>
+            <div class="field-group">
+              <label data-fr="Surface approximative (m²)" data-en="Approximate surface (m²)">Surface approximative (m²)</label>
+              <input type="number" name="t_surface_plat" placeholder="m²" />
+            </div>
+            <div class="check-group">
+              <label class="check-label" data-fr="Type d'étanchéité :" data-en="Waterproofing type:">Type d'étanchéité :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_etancheite_type" value="bitumineuse"/> <span data-fr="Bitumineuse" data-en="Bituminous">Bitumineuse</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_etancheite_type" value="pvc"/> <span>PVC</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_etancheite_type" value="epdm"/> <span>EPDM</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_etancheite_type" value="resine"/> <span data-fr="Résine" data-en="Resin">Résine</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_etancheite_type" value="autre" class="triggers-preciser" data-target="t_etancheite_type_autre_wrap"/> <span data-fr="Autre" data-en="Other">Autre</span></label>
+              </div>
+              <div class="preciser-field" id="t_etancheite_type_autre_wrap"><input type="text" name="t_etancheite_type_autre" placeholder="Préciser…" data-ph-fr="Préciser…" data-ph-en="Specify…" /></div>
+            </div>
+            <div class="check-group">
+              <label class="check-label" data-fr="Protection de l'étanchéité :" data-en="Waterproofing protection:">Protection de l'étanchéité :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_protection_etancheite" value="apparente"/> <span data-fr="Apparente" data-en="Exposed">Apparente</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_protection_etancheite" value="gravillons"/> <span data-fr="Gravillons" data-en="Gravel">Gravillons</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_protection_etancheite" value="dalles_plots"/> <span data-fr="Dalles sur plots" data-en="Paving on feet">Dalles sur plots</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_protection_etancheite" value="vegetalisee"/> <span data-fr="Végétalisée" data-en="Green roof">Végétalisée</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_protection_etancheite" value="inconnue"/> <span data-fr="Inconnue" data-en="Unknown">Inconnue</span></label>
+              </div>
+            </div>
+            <div class="check-group">
+              <label class="check-label" data-fr="Isolation sous étanchéité :" data-en="Insulation under waterproofing:">Isolation sous étanchéité :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_isolation_etancheite" value="oui"/> <span data-fr="Oui" data-en="Yes">Oui</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_isolation_etancheite" value="non"/> <span data-fr="Non" data-en="No">Non</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_isolation_etancheite" value="inconnue"/> <span data-fr="Inconnue" data-en="Unknown">Inconnue</span></label>
+              </div>
+            </div>
+            <div class="check-group">
+              <label class="check-label" data-fr="Âge estimé de l'étanchéité :" data-en="Estimated age of waterproofing:">Âge estimé de l'étanchéité :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_age_etancheite" value="moins5"/> <span data-fr="&lt; 5 ans" data-en="&lt; 5 yrs">&lt; 5 ans</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_age_etancheite" value="5_10"/> <span data-fr="5–10 ans" data-en="5–10 yrs">5–10 ans</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_age_etancheite" value="plus10"/> <span data-fr="&gt; 10 ans" data-en="&gt; 10 yrs">&gt; 10 ans</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_age_etancheite" value="inconnu"/> <span data-fr="Inconnu" data-en="Unknown">Inconnu</span></label>
+              </div>
+            </div>
+
+            <div class="sub-section-title" data-fr="A2 — Équipements de sécurité et accès — Toit plat" data-en="A2 — Safety equipment and access — Flat roof">A2 — Équipements de sécurité et accès — Toit plat</div>
+            <div class="check-group">
+              <label class="check-label" data-fr="Présence de garde-corps périphériques :" data-en="Perimeter guardrails present:">Présence de garde-corps périphériques :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_garde_corps" value="oui"/> <span data-fr="Oui" data-en="Yes">Oui</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_garde_corps" value="non"/> <span data-fr="Non" data-en="No">Non</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_garde_corps" value="partiels"/> <span data-fr="Partiels" data-en="Partial">Partiels</span></label>
+              </div>
+            </div>
+            <div class="check-group">
+              <label class="check-label" data-fr="Présence de ligne(s) de vie :" data-en="Lifeline(s) present:">Présence de ligne(s) de vie :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_lignes_vie_plat" value="oui"/> <span data-fr="Oui" data-en="Yes">Oui</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_lignes_vie_plat" value="non"/> <span data-fr="Non" data-en="No">Non</span></label>
+              </div>
+            </div>
+            <div class="check-group">
+              <label class="check-label" data-fr="Présence de points d'ancrage :" data-en="Anchor points present:">Présence de points d'ancrage :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_ancrage_plat" value="oui"/> <span data-fr="Oui" data-en="Yes">Oui</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_ancrage_plat" value="non"/> <span data-fr="Non" data-en="No">Non</span></label>
+              </div>
+            </div>
+            <div class="field-group"><label data-fr="Type d'accès" data-en="Access type">Type d'accès</label><input type="text" name="t_acces_type_plat" placeholder="Ex : trappe, escalier…" /></div>
+            <div class="field-group"><label data-fr="Hauteur de l'accès" data-en="Access height">Hauteur de l'accès</label><input type="text" name="t_acces_hauteur_plat" placeholder="Ex : 3 m…" /></div>
+            <div class="check-group">
+              <label class="check-label" data-fr="Échelle sur place :" data-en="Ladder on site:">Échelle sur place :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_echelle_plat" value="oui"/> <span data-fr="Oui" data-en="Yes">Oui</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_echelle_plat" value="non"/> <span data-fr="Non" data-en="No">Non</span></label>
+              </div>
+            </div>
+            <div class="field-group"><label data-fr="Qui donne l'accès" data-en="Who provides access">Qui donne l'accès</label><input type="text" name="t_acces_qui_plat" placeholder="Ex : propriétaire, gardien…" /></div>
+            <div class="field-group"><label data-fr="Stationnement" data-en="Parking">Stationnement</label><input type="text" name="t_stationnement_plat" placeholder="Ex : rue, parking…" /></div>
+          </div>
+        </div>
+      </div><!-- /MODULE A -->
+
+      <!-- MODULE B — TOIT EN PENTE -->
+      <div class="preciser-field" id="t_toit_pente_wrap" style="display:none">
+        <div class="form-card">
+          <div class="form-card-header"><span class="step-num" style="background:#e05e10">B</span> <span data-fr="🏠 MODULE B — Toit en pente" data-en="🏠 MODULE B — Pitched roof">🏠 MODULE B — Toit en pente</span></div>
+          <div class="form-card-body">
+            <p class="module-label" data-fr="(À compléter uniquement si toiture en pente)" data-en="(Complete only if pitched roof)">(À compléter uniquement si toiture en pente)</p>
+
+            <div class="sub-section-title" data-fr="B1 — Surface &amp; Composition" data-en="B1 — Surface &amp; Composition">B1 — Surface &amp; Composition</div>
+            <div class="field-group">
+              <label data-fr="Surface approximative (m²)" data-en="Approximate surface (m²)">Surface approximative (m²)</label>
+              <input type="number" name="t_surface_pente" placeholder="m²" />
+            </div>
+            <div class="field-group">
+              <label data-fr="Pente approximative (%)" data-en="Approximate slope (%)">Pente approximative (%)</label>
+              <input type="number" name="t_pente_pct" placeholder="%" />
+            </div>
+            <div class="check-group">
+              <label class="check-label" data-fr="Type de couverture :" data-en="Covering type:">Type de couverture :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_couverture_type" value="tuiles"/> <span data-fr="Tuiles" data-en="Tiles">Tuiles</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_couverture_type" value="ardoises"/> <span data-fr="Ardoises" data-en="Slates">Ardoises</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_couverture_type" value="bac_acier"/> <span data-fr="Bac acier" data-en="Steel sheet">Bac acier</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_couverture_type" value="zinc"/> <span>Zinc</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_couverture_type" value="autre" class="triggers-preciser" data-target="t_couverture_autre_wrap"/> <span data-fr="Autre" data-en="Other">Autre</span></label>
+              </div>
+              <div class="preciser-field" id="t_couverture_autre_wrap"><input type="text" name="t_couverture_autre" placeholder="Préciser…" data-ph-fr="Préciser…" data-ph-en="Specify…" /></div>
+            </div>
+            <div class="check-group">
+              <label class="check-label" data-fr="État apparent de la couverture :" data-en="Apparent condition of covering:">État apparent de la couverture :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_etat_couverture" value="bon"/> <span data-fr="Bon" data-en="Good">Bon</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_etat_couverture" value="moyen"/> <span data-fr="Moyen" data-en="Fair">Moyen</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_etat_couverture" value="degrade"/> <span data-fr="Dégradé" data-en="Degraded">Dégradé</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_etat_couverture" value="inconnu"/> <span data-fr="Inconnu" data-en="Unknown">Inconnu</span></label>
+              </div>
+            </div>
+            <div class="check-group">
+              <label class="check-label" data-fr="Présence d'une sous-toiture :" data-en="Underlay present:">Présence d'une sous-toiture :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_sous_toiture" value="oui"/> <span data-fr="Oui" data-en="Yes">Oui</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_sous_toiture" value="non"/> <span data-fr="Non" data-en="No">Non</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_sous_toiture" value="inconnu"/> <span data-fr="Inconnu" data-en="Unknown">Inconnu</span></label>
+              </div>
+            </div>
+            <div class="check-group">
+              <label class="check-label" data-fr="Âge estimé de la couverture :" data-en="Estimated age of covering:">Âge estimé de la couverture :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_age_couverture" value="moins5"/> <span data-fr="&lt; 5 ans" data-en="&lt; 5 yrs">&lt; 5 ans</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_age_couverture" value="5_10"/> <span data-fr="5–10 ans" data-en="5–10 yrs">5–10 ans</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_age_couverture" value="plus10"/> <span data-fr="&gt; 10 ans" data-en="&gt; 10 yrs">&gt; 10 ans</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_age_couverture" value="inconnu"/> <span data-fr="Inconnu" data-en="Unknown">Inconnu</span></label>
+              </div>
+            </div>
+
+            <div class="sub-section-title" data-fr="B2 — Équipements de sécurité et accès — Toit en pente" data-en="B2 — Safety equipment and access — Pitched roof">B2 — Équipements de sécurité et accès — Toit en pente</div>
+            <div class="check-group">
+              <label class="check-label" data-fr="Présence de dispositifs antichute :" data-en="Fall protection devices:">Présence de dispositifs antichute :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_antichute" value="crochets"/> <span data-fr="Crochets de sécurité" data-en="Safety hooks">Crochets de sécurité</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_antichute" value="lignes_vie"/> <span data-fr="Lignes de vie" data-en="Lifelines">Lignes de vie</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_antichute" value="ancrage"/> <span data-fr="Points d'ancrage" data-en="Anchor points">Points d'ancrage</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_antichute" value="aucun"/> <span data-fr="Aucun dispositif" data-en="No device">Aucun dispositif</span></label>
+              </div>
+            </div>
+            <div class="field-group"><label data-fr="Type d'accès" data-en="Access type">Type d'accès</label><input type="text" name="t_acces_type_pente" placeholder="Ex : trappe, escalier…" /></div>
+            <div class="field-group"><label data-fr="Hauteur de l'accès" data-en="Access height">Hauteur de l'accès</label><input type="text" name="t_acces_hauteur_pente" placeholder="Ex : 5 m…" /></div>
+            <div class="check-group">
+              <label class="check-label" data-fr="Échelle sur place :" data-en="Ladder on site:">Échelle sur place :</label>
+              <div class="checks-row">
+                <label class="checkbox-item"><input type="checkbox" name="t_echelle_pente" value="oui"/> <span data-fr="Oui" data-en="Yes">Oui</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="t_echelle_pente" value="non"/> <span data-fr="Non" data-en="No">Non</span></label>
+              </div>
+            </div>
+            <div class="field-group"><label data-fr="Qui donne l'accès" data-en="Who provides access">Qui donne l'accès</label><input type="text" name="t_acces_qui_pente" placeholder="Ex : propriétaire, gardien…" /></div>
+            <div class="field-group"><label data-fr="Stationnement" data-en="Parking">Stationnement</label><input type="text" name="t_stationnement_pente" placeholder="Ex : rue, parking…" /></div>
+          </div>
+        </div>
+      </div><!-- /MODULE B -->
+
     </div><!-- /panel-toiture -->
 
     <!-- ======== EXTÉRIEUR ======== -->
@@ -664,7 +994,6 @@
       <div class="submit-info">
         <strong data-fr="Prêt à envoyer ?" data-en="Ready to send?">Prêt à envoyer ?</strong>
         <span data-fr="Le questionnaire sera transmis directement par email." data-en="The questionnaire will be sent directly by email.">Le questionnaire sera transmis directement par email.</span>
- <!-- <span class="email-badge">✉ contact@sosfuitedeau.com</span>-->
       </div>
       <div class="form-btns">
         <button type="button" class="btn-secondary" id="clearFormBtn" data-fr="Effacer" data-en="Clear">Effacer</button>
@@ -687,7 +1016,7 @@
       <strong>contact@sosfuitedeau.com</strong>.
       <span data-fr="Notre équipe prendra contact avec vous très prochainement." data-en="Our team will get back to you shortly.">Notre équipe prendra contact avec vous très prochainement.</span>
     </p>
-    <button class="btn-primary" style="width:100%;justify-content:center, color: b0ca60;" id="newFormBtn">
+    <button class="btn-primary" style="width:100%;justify-content:center" id="newFormBtn">
       <span data-fr="Nouveau questionnaire" data-en="New questionnaire">Nouveau questionnaire</span>
     </button>
   </div>
@@ -701,20 +1030,14 @@
 <script>
 'use strict';
 
-// =====================================================
-// ⚠️  CONFIGURATION EMAILJS
-// =====================================================
 const EMAILJS_PUBLIC_KEY  = 'WRObk6XItB_ad2Wcv';
 const EMAILJS_SERVICE_ID  = 'service_310qkf3';
 const EMAILJS_TEMPLATE_ID = 'template_nsrtiz9';
 
 emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
-// =====================================================
-// 🌐 LANGUAGE SYSTEM
-// =====================================================
+// ===== LANGUAGE =====
 let currentLang = 'fr';
-
 function setLang(lang) {
   currentLang = lang;
   document.getElementById('btnFR').classList.toggle('active', lang === 'fr');
@@ -736,7 +1059,7 @@ function setLang(lang) {
   if (clearBtn) clearBtn.textContent = lang === 'fr' ? 'Effacer' : 'Clear';
 }
 
-// ============ PRÉCISER SI AUTRE ============
+// ===== PRÉCISER SI AUTRE =====
 document.addEventListener('change', function(e) {
   if (e.target.classList.contains('triggers-preciser')) {
     const targetId = e.target.dataset.target;
@@ -746,6 +1069,10 @@ document.addEventListener('change', function(e) {
       '.triggers-preciser[data-target="' + targetId + '"]:checked'
     ).length > 0;
     wrap.classList.toggle('visible', anyChecked);
+    // Pour les modules toiture (display:none au lieu de .visible)
+    if (wrap.style.display !== undefined && !wrap.classList.contains('preciser-field')) {
+      wrap.style.display = anyChecked ? 'block' : 'none';
+    }
     if (!anyChecked) {
       const input = wrap.querySelector('input');
       if (input) input.value = '';
@@ -753,9 +1080,20 @@ document.addEventListener('change', function(e) {
   }
 });
 
-// ============ TYPE SELECTOR ============
-let currentType = 'interieur';
+// Gestion spéciale pour les modules toiture (ils sont des preciser-field avec style inline)
+document.addEventListener('change', function(e) {
+  if (e.target.name === 't_type_toiture') {
+    const platWrap = document.getElementById('t_toit_plat_wrap');
+    const penteWrap = document.getElementById('t_toit_pente_wrap');
+    const platChecked = document.querySelector('input[name="t_type_toiture"][value="toit_plat"]:checked');
+    const penteChecked = document.querySelector('input[name="t_type_toiture"][value="toit_pente"]:checked');
+    if (platWrap) platWrap.style.display = platChecked ? 'block' : 'none';
+    if (penteWrap) penteWrap.style.display = penteChecked ? 'block' : 'none';
+  }
+});
 
+// ===== TYPE SELECTOR =====
+let currentType = 'interieur';
 document.querySelectorAll('.type-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     currentType = btn.dataset.type;
@@ -764,15 +1102,14 @@ document.querySelectorAll('.type-btn').forEach(btn => {
   });
 });
 
-// ============ FORMAT VALUE ============
-// ⚠️ DOIT être définie AVANT le listener sendFormBtn
+// ===== FORMAT VALUE =====
 function fmtVal(v) {
   if (!v) return '—';
   if (Array.isArray(v)) return v.length ? v.join(', ') : '—';
   return v || '—';
 }
 
-// ============ COLLECT FORM ============
+// ===== COLLECT FORM =====
 function collectForm() {
   const form = document.getElementById('mainForm');
   const data = { type: currentType, lang: currentLang };
@@ -791,7 +1128,7 @@ function collectForm() {
   return data;
 }
 
-// ============ BUILD EMAIL TEXT ============
+// ===== BUILD EMAIL TEXT =====
 function buildEmailText(data) {
   const isFr = data.lang !== 'en';
   const typeLabels = {
@@ -801,217 +1138,73 @@ function buildEmailText(data) {
     exterieur: isFr ? 'Extérieur' : 'Exterior'
   };
   const val = v => !v ? '—' : Array.isArray(v) ? (v.length ? v.join(', ') : '—') : (v || '—');
-
   function withAutre(v, autreVal) {
     const base = val(v);
     if (base === '—') return '—';
     return (autreVal && Array.isArray(v) && v.includes('autre')) ? base + ' (' + autreVal + ')' : base;
   }
-
   function section(titre, lignes) {
     const rows = lignes.filter(([, v]) => v && v !== '—' && !(Array.isArray(v) && !v.length));
     if (!rows.length) return '';
     return '\n\n=== ' + titre.toUpperCase() + ' ===\n' +
       rows.map(([lbl, v]) => lbl + ' : ' + val(v)).join('\n');
   }
-
-  const L = {
-    header: isFr ? "📋 QUESTIONNAIRE D'INTERVENTION — SOS FUITE D'EAU" : "📋 SERVICE REQUEST FORM — WATER LEAK",
-    divider: '════════════════════════════════════════════════',
-    dossier: isFr ? 'Dossier N°' : 'File N°',
-    type: isFr ? 'Type' : 'Type',
-    date: isFr ? 'Date' : 'Date',
-    s1_i: isFr ? '1. Origine du sinistre' : '1. Leak origin',
-    anciennete: isFr ? 'Ancienneté' : 'How long',
-    progresse: isFr ? 'Dégât progresse' : 'Damage spreading',
-    eau_coule: isFr ? 'Eau coule' : 'Water flowing',
-    alim: isFr ? 'Alimentation coupée' : 'Supply shut off',
-    fuite_arrete: isFr ? "Fuite s'arrête" : 'Leak stops',
-    s2_i: isFr ? '2. Localisation' : '2. Location',
-    zone: isFr ? 'Zone' : 'Area',
-    piece: isFr ? 'Pièce(s)' : 'Room(s)',
-    niveau: isFr ? 'Niveau' : 'Floor level',
-    s3_i: isFr ? '3. Environnement' : '3. Surroundings',
-    au_dessus: isFr ? 'Au-dessus' : 'Above',
-    en_dessous: isFr ? 'En dessous' : 'Below',
-    derriere: isFr ? 'Derrière mur' : 'Behind wall',
-    s4_i: isFr ? '4. Humidité / Indices' : '4. Moisture / Signs',
-    z_humide: isFr ? 'Zone humide' : 'Damp zone',
-    precision: isFr ? 'Précision' : 'Details',
-    odeur: isFr ? 'Odeur' : 'Smell',
-    indices: isFr ? 'Indices' : 'Signs',
-    s5_i: isFr ? '5. Installations / Travaux' : '5. Installations / Works',
-    chauffe: isFr ? 'Chauffe-eau' : 'Water heater',
-    chauffe_type: isFr ? 'Type chauffe-eau' : 'Heater type',
-    travaux: isFr ? 'Travaux récents' : 'Recent works',
-    travaux_nat: isFr ? 'Nature travaux' : 'Work nature',
-    s1_p: isFr ? "1. Origine / Perte d'eau" : '1. Origin / Water loss',
-    perte: isFr ? "Perte d'eau (cm/24h)" : 'Water loss (cm/24h)',
-    filtration: isFr ? 'Fuite se produit' : 'Leak occurs',
-    skimmer_niv: isFr ? 'Niveau/skimmers' : 'Level/skimmers',
-    s2_p: isFr ? '2. Type de piscine' : '2. Pool type',
-    revetement: isFr ? 'Revêtement' : 'Lining',
-    volume: isFr ? 'Volume (m³)' : 'Volume (m³)',
-    s3_p: isFr ? '3. Équipements' : '3. Equipment',
-    equip: isFr ? 'Équipements' : 'Equipment',
-    type_filtre: isFr ? 'Type filtre' : 'Filter type',
-    s4_p: isFr ? '4. Local technique' : '4. Equipment room',
-    local: isFr ? 'Local présent' : 'Room present',
-    local_cont: isFr ? 'Contient' : 'Contains',
-    local_autre: isFr ? 'Autre équip.' : 'Other equip.',
-    local_humid: isFr ? 'Traces humidité' : 'Moisture traces',
-    s5_p: isFr ? '5. Analyse par zone' : '5. Zone analysis',
-    skim_def: isFr ? 'Skimmers défaut' : 'Skimmer defect',
-    skim_det: isFr ? 'Précision skimmers' : 'Skimmer details',
-    microbulles: isFr ? 'Micro-bulles' : 'Micro-bubbles',
-    bonde: isFr ? 'Bonde en cause' : 'Main drain involved',
-    prise_balai: isFr ? 'Prise balai perte' : 'Vacuum point loss',
-    cana: isFr ? 'Canalis. enterrées' : 'Underground pipes',
-    plan: isFr ? 'Plan connu' : 'Plan available',
-    doc: isFr ? 'Document dispo' : 'Document available',
-    s1_t: isFr ? '1. Origine' : '1. Origin',
-    conditions: isFr ? 'Conditions' : 'Conditions',
-    zone_int: isFr ? 'Zone intérieure' : 'Interior area',
-    observations: isFr ? 'Observations' : 'Observations',
-    s1_e: isFr ? '1. Origine' : '1. Origin',
-    surconso: isFr ? 'Surconso.' : 'Overconsumption',
-    compteur_t: isFr ? 'Compteur tourne' : 'Meter running',
-    vanne: isFr ? 'Vanne testée' : 'Valve tested',
-    fuite_vis: isFr ? 'Fuite visible' : 'Visible leak',
-    loc_fuite: isFr ? 'Localisation' : 'Location',
-    s2_e: isFr ? '2. Localisation' : '2. Location',
-    distance: isFr ? 'Distance compteur' : 'Meter distance',
-    type_sol: isFr ? 'Type sol' : 'Ground type',
-    s3_e: isFr ? '3. Compteur & Réseau' : '3. Meter & Network',
-    compteur_loc: isFr ? 'Localisation compteur' : 'Meter location',
-    type_compteur: isFr ? 'Type compteur' : 'Meter type',
-    accessible: isFr ? 'Accessible' : 'Accessible',
-    regard: isFr ? 'Regard' : 'Manhole',
-    profond_c: isFr ? 'Profondeur connue' : 'Depth known',
-    profond_v: isFr ? 'Profondeur (cm)' : 'Depth (cm)',
-    s4_e: isFr ? '4. Installations ext.' : '4. Exterior installations',
-    arrosage: isFr ? 'Arrosage' : 'Irrigation',
-    type_arr: isFr ? 'Type arrosage' : 'Irrigation type',
-    vannes_sec: isFr ? 'Vannes sec.' : 'Secondary valves',
-    vannes_loc: isFr ? 'Loc. vannes' : 'Valve locations',
-    s5_e: isFr ? '5. Compléments' : '5. Additional info',
-    photos: isFr ? 'Photos' : 'Photos',
-    obs_client: isFr ? 'Observations' : 'Observations',
-  };
-
-  let body = L.header + '\n' + L.divider + '\n';
-  body += L.dossier + ' : ' + (data.refRapport || '—') + '\n';
-  body += L.type + '       : ' + (typeLabels[data.type] || data.type) + '\n';
-  body += L.date + '       : ' + data.createdAt + '\n';
-
-  if (data.type === 'interieur') {
-    body += section(L.s1_i, [
-      [L.anciennete, withAutre(data.anciennete, data.anciennete_autre)],
-      [L.progresse, data.degat_progresse], [L.eau_coule, data.eau_coule],
-      [L.alim, data.alim_coupee], [L.fuite_arrete, data.fuite_arrete]
-    ]);
-    body += section(L.s2_i, [
-      [L.zone, withAutre(data.zone_int, data.zone_int_autre)],
-      [L.piece, withAutre(data.piece, data.piece_autre)],
-      [L.niveau, withAutre(data.niveau, data.niveau_autre)]
-    ]);
-    body += section(L.s3_i, [
-      [L.au_dessus, withAutre(data.au_dessus, data.au_dessus_autre)],
-      [L.en_dessous, withAutre(data.en_dessous, data.en_dessous_autre)],
-      [L.derriere, withAutre(data.derriere_mur, data.derriere_mur_autre)]
-    ]);
-    body += section(L.s4_i, [
-      [L.z_humide, data.zone_humide], [L.precision, data.zone_humide_precision],
-      [L.odeur, data.odeur], [L.indices, data.indices]
-    ]);
-    body += section(L.s5_i, [
-      [L.chauffe, data.chauffe_eau],
-      [L.chauffe_type, withAutre(data.chauffe_eau_type, data.chauffe_eau_type_autre)],
-      [L.travaux, data.travaux],
-      [L.travaux_nat, withAutre(data.travaux_nature, data.travaux_nature_autre)]
-    ]);
-  }
-
-  if (data.type === 'piscine') {
-    body += section(L.s1_p, [
-      [L.anciennete, withAutre(data.p_anciennete, data.p_anciennete_autre)],
-      [L.perte, data.perte_eau],
-      [L.filtration, withAutre(data.filtration_etat, data.filtration_etat_autre)],
-      [L.skimmer_niv, withAutre(data.niveau_skimmer, data.niveau_skimmer_autre)]
-    ]);
-    body += section(L.s2_p, [
-      [L.type, data.type_piscine],
-      [L.revetement, withAutre(data.revetement, data.revetement_autre)],
-      [L.volume, data.volume_piscine]
-    ]);
-    body += section(L.s3_p, [
-      [L.equip, data.equip], ['Skimmers', data.qte_skimmers],
-      [isFr ? 'Refoulements' : 'Return jets', data.qte_refoulements],
-      [isFr ? 'Prise balai' : 'Vacuum point', data.qte_prise_balai],
-      [isFr ? 'Bonde fond' : 'Main drain', data.qte_bonde],
-      [isFr ? 'Trop-plein' : 'Overflow', data.qte_trop_plein],
-      [isFr ? 'Projecteurs' : 'Lights', data.qte_projecteurs],
-      [isFr ? 'Pompe' : 'Pump', data.qte_pompe],
-      [isFr ? 'Filtre' : 'Filter', data.qte_filtre],
-      [L.type_filtre, withAutre(data.type_filtre, data.type_filtre_autre)],
-      [isFr ? 'Bâche' : 'Cover', data.qte_bache]
-    ]);
-    body += section(L.s4_p, [
-      [L.local, data.local_technique], [L.local_cont, data.local_contient],
-      [L.local_autre, data.local_autre_equip], [L.local_humid, data.p_humidite_local]
-    ]);
-    body += section(L.s5_p, [
-      [L.skim_def, withAutre(data.p_defaut_skimmer, data.p_defaut_skimmer_autre)],
-      [L.skim_det, data.p_defaut_skimmer_detail],
-      [L.microbulles, withAutre(data.p_microbulles, data.p_microbulles_autre)],
-      [L.bonde, withAutre(data.p_bonde_cause, data.p_bonde_cause_autre)],
-      [L.prise_balai, withAutre(data.p_prise_balai_perte, data.p_prise_balai_perte_autre)],
-      [L.cana, data.p_cana_enterrees],
-      [L.plan, data.p_plan_connu], [L.doc, data.p_plan_detail]
-    ]);
-  }
+  let body = "📋 QUESTIONNAIRE D'INTERVENTION — SOS FUITE D'EAU\n════════════════════════════════════════════════\n";
+  body += 'Email : ' + (data.refRapport || '—') + '\n';
+  body += 'Type  : ' + (typeLabels[data.type] || data.type) + '\n';
+  body += 'Date  : ' + data.createdAt + '\n';
 
   if (data.type === 'toiture') {
-    body += section(L.s1_t, [
-      [L.anciennete, withAutre(data.t_anciennete, data.t_anciennete_autre)],
-      [L.conditions, withAutre(data.t_condition, data.t_condition_autre)],
-      [L.zone_int, withAutre(data.t_zone_int, data.t_zone_int_autre)],
-      [L.observations, data.t_observations]
+    body += section('1. Origine du problème', [
+      ['Ancienneté', withAutre(data.t_anciennete, data.t_anciennete_autre)],
+      ['Conditions', withAutre(data.t_condition, data.t_condition_autre)],
+      ['Type dégât', withAutre(data.t_type_degat, data.t_type_degat_autre)],
+      ['Zone intérieure', withAutre(data.t_zone_int, data.t_zone_int_autre)],
+      ['Pièce impactée', data.t_piece_impactee],
+      ['Étage', data.t_etage],
+      ['Type toiture', data.t_type_toiture],
+      ['Observations', data.t_observations]
     ]);
+    // Module A
+    if (data.t_type_toiture && data.t_type_toiture.includes('toit_plat')) {
+      body += section('MODULE A — TOIT PLAT', [
+        ['Surface (m²)', data.t_surface_plat],
+        ['Type étanchéité', withAutre(data.t_etancheite_type, data.t_etancheite_type_autre)],
+        ['Protection', data.t_protection_etancheite],
+        ['Isolation', data.t_isolation_etancheite],
+        ['Âge étanchéité', data.t_age_etancheite],
+        ['Garde-corps', data.t_garde_corps],
+        ['Lignes de vie', data.t_lignes_vie_plat],
+        ['Points ancrage', data.t_ancrage_plat],
+        ["Type d'accès", data.t_acces_type_plat],
+        ["Hauteur d'accès", data.t_acces_hauteur_plat],
+        ['Échelle', data.t_echelle_plat],
+        ['Qui donne accès', data.t_acces_qui_plat],
+        ['Stationnement', data.t_stationnement_plat]
+      ]);
+    }
+    // Module B
+    if (data.t_type_toiture && data.t_type_toiture.includes('toit_pente')) {
+      body += section('MODULE B — TOIT EN PENTE', [
+        ['Surface (m²)', data.t_surface_pente],
+        ['Pente (%)', data.t_pente_pct],
+        ['Type couverture', withAutre(data.t_couverture_type, data.t_couverture_autre)],
+        ['État couverture', data.t_etat_couverture],
+        ['Sous-toiture', data.t_sous_toiture],
+        ['Âge couverture', data.t_age_couverture],
+        ['Dispositifs antichute', data.t_antichute],
+        ["Type d'accès", data.t_acces_type_pente],
+        ["Hauteur d'accès", data.t_acces_hauteur_pente],
+        ['Échelle', data.t_echelle_pente],
+        ['Qui donne accès', data.t_acces_qui_pente],
+        ['Stationnement', data.t_stationnement_pente]
+      ]);
+    }
   }
-
-  if (data.type === 'exterieur') {
-    body += section(L.s1_e, [
-      [L.anciennete, withAutre(data.e_anciennete, data.e_anciennete_autre)],
-      [L.surconso, data.surconso], [L.compteur_t, data.compteur_tourne],
-      [L.vanne, data.vanne_testee], [L.fuite_vis, data.fuite_visible],
-      [L.loc_fuite, data.fuite_visible_loc]
-    ]);
-    body += section(L.s2_e, [
-      [L.zone, withAutre(data.e_zone, data.e_zone_autre)],
-      [L.distance, data.distance_compteur],
-      [L.type_sol, withAutre(data.type_sol, data.type_sol_autre)]
-    ]);
-    body += section(L.s3_e, [
-      [L.compteur_loc, withAutre(data.compteur_loc, data.compteur_loc_autre)],
-      [L.type_compteur, withAutre(data.type_compteur, data.type_compteur_autre)],
-      [L.accessible, data.compteur_accessible], [L.regard, data.regard],
-      [L.profond_c, data.profondeur_connue], [L.profond_v, data.profondeur_cm]
-    ]);
-    body += section(L.s4_e, [
-      [L.arrosage, data.arrosage],
-      [L.type_arr, withAutre(data.type_arrosage, data.type_arrosage_autre)],
-      [L.vannes_sec, data.vannes_sec], [L.vannes_loc, data.vannes_loc]
-    ]);
-    body += section(L.s5_e, [
-      [L.photos, data.photos], [L.obs_client, data.e_observations_client]
-    ]);
-  }
-
   return body;
 }
 
-// ============ RESET ============
+// ===== RESET =====
 function resetForm() {
   document.getElementById('mainForm').reset();
   document.getElementById('refRapport').value = '';
@@ -1020,12 +1213,13 @@ function resetForm() {
     const input = f.querySelector('input');
     if (input) input.value = '';
   });
+  document.getElementById('t_toit_plat_wrap').style.display = 'none';
+  document.getElementById('t_toit_pente_wrap').style.display = 'none';
 }
 
-// ============ SEND ============
+// ===== SEND =====
 document.getElementById('sendFormBtn').addEventListener('click', async () => {
   const data = collectForm();
-
   if (!data.refRapport) {
     showToast(currentLang === 'fr'
       ? "Veuillez remplir votre email avant d'envoyer."
@@ -1033,11 +1227,9 @@ document.getElementById('sendFormBtn').addEventListener('click', async () => {
     document.getElementById('refRapport').focus();
     return;
   }
-
   const btn = document.getElementById('sendFormBtn');
   btn.disabled = true;
   btn.querySelector('span').textContent = currentLang === 'fr' ? 'Envoi en cours…' : 'Sending…';
-
   try {
     const typeLabels = {
       interieur: currentLang === 'fr' ? 'Intérieur' : 'Interior',
@@ -1045,86 +1237,68 @@ document.getElementById('sendFormBtn').addEventListener('click', async () => {
       toiture:   currentLang === 'fr' ? 'Toiture'   : 'Roofing',
       exterieur: currentLang === 'fr' ? 'Extérieur' : 'Exterior'
     };
-
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       to_email:   'contact@sosfuitedeau.com',
       dossier:    data.refRapport,
       type_inter: typeLabels[data.type] || data.type,
       date_envoi: data.createdAt,
-      // === INTÉRIEUR ===
-      anciennete:          fmtVal(data.anciennete),
-      degat_progresse:     fmtVal(data.degat_progresse),
-      eau_coule:           fmtVal(data.eau_coule),
-      alim_coupee:         fmtVal(data.alim_coupee),
-      fuite_arrete:        fmtVal(data.fuite_arrete),
-      zone_int:            fmtVal(data.zone_int),
-      piece:               fmtVal(data.piece),
-      niveau:              fmtVal(data.niveau),
-      au_dessus:           fmtVal(data.au_dessus),
-      en_dessous:          fmtVal(data.en_dessous),
-      derriere_mur:        fmtVal(data.derriere_mur),
-      zone_humide:         fmtVal(data.zone_humide),
-      zone_humide_prec:    data.zone_humide_precision || '',
-      odeur:               fmtVal(data.odeur),
-      indices:             fmtVal(data.indices),
-      chauffe_eau:         fmtVal(data.chauffe_eau),
-      chauffe_type:        fmtVal(data.chauffe_eau_type),
-      travaux:             fmtVal(data.travaux),
-      travaux_nature:      fmtVal(data.travaux_nature),
-      // === PISCINE ===
-      p_anciennete:        fmtVal(data.p_anciennete),
-      perte_eau:           data.perte_eau || '',
-      filtration_etat:     fmtVal(data.filtration_etat),
-      niveau_skimmer:      fmtVal(data.niveau_skimmer),
-      type_piscine:        fmtVal(data.type_piscine),
-      revetement:          fmtVal(data.revetement),
-      volume_piscine:      data.volume_piscine || '',
-      equip:               fmtVal(data.equip),
-      type_filtre:         fmtVal(data.type_filtre),
-      local_technique:     fmtVal(data.local_technique),
-      local_contient:      fmtVal(data.local_contient),
-      p_humidite_local:    fmtVal(data.p_humidite_local),
-      p_defaut_skimmer:    fmtVal(data.p_defaut_skimmer),
-      p_microbulles:       fmtVal(data.p_microbulles),
-      p_bonde_cause:       fmtVal(data.p_bonde_cause),
-      p_prise_balai:       fmtVal(data.p_prise_balai_perte),
-      p_cana_enterrees:    fmtVal(data.p_cana_enterrees),
-      p_plan_connu:        fmtVal(data.p_plan_connu),
-      // === TOITURE ===
-      t_anciennete:        fmtVal(data.t_anciennete),
-      t_condition:         fmtVal(data.t_condition),
-      t_zone_int:          fmtVal(data.t_zone_int),
-      t_observations:      data.t_observations || '',
-      // === EXTÉRIEUR ===
-      e_anciennete:        fmtVal(data.e_anciennete),
-      surconso:            fmtVal(data.surconso),
-      compteur_tourne:     fmtVal(data.compteur_tourne),
-      vanne_testee:        fmtVal(data.vanne_testee),
-      fuite_visible:       fmtVal(data.fuite_visible),
-      fuite_visible_loc:   data.fuite_visible_loc || '',
-      e_zone:              fmtVal(data.e_zone),
-      distance_compteur:   data.distance_compteur || '',
-      type_sol:            fmtVal(data.type_sol),
-      compteur_loc:        fmtVal(data.compteur_loc),
-      type_compteur:       fmtVal(data.type_compteur),
-      compteur_accessible: fmtVal(data.compteur_accessible),
-      regard:              fmtVal(data.regard),
-      profondeur_connue:   fmtVal(data.profondeur_connue),
-      profondeur_cm:       data.profondeur_cm || '',
-      arrosage:            fmtVal(data.arrosage),
-      type_arrosage:       fmtVal(data.type_arrosage),
-      vannes_sec:          fmtVal(data.vannes_sec),
-      vannes_loc:          data.vannes_loc || '',
-      e_photos:            fmtVal(data.photos),
-      e_observations:      data.e_observations_client || '',
+      // INTÉRIEUR
+      anciennete: fmtVal(data.anciennete), degat_progresse: fmtVal(data.degat_progresse),
+      eau_coule: fmtVal(data.eau_coule), alim_coupee: fmtVal(data.alim_coupee),
+      fuite_arrete: fmtVal(data.fuite_arrete), zone_int: fmtVal(data.zone_int),
+      piece: fmtVal(data.piece), niveau: fmtVal(data.niveau),
+      au_dessus: fmtVal(data.au_dessus), en_dessous: fmtVal(data.en_dessous),
+      derriere_mur: fmtVal(data.derriere_mur), zone_humide: fmtVal(data.zone_humide),
+      zone_humide_prec: data.zone_humide_precision || '', odeur: fmtVal(data.odeur),
+      indices: fmtVal(data.indices), chauffe_eau: fmtVal(data.chauffe_eau),
+      chauffe_type: fmtVal(data.chauffe_eau_type), travaux: fmtVal(data.travaux),
+      travaux_nature: fmtVal(data.travaux_nature),
+      // PISCINE
+      p_anciennete: fmtVal(data.p_anciennete), perte_eau: data.perte_eau || '',
+      filtration_etat: fmtVal(data.filtration_etat), niveau_skimmer: fmtVal(data.niveau_skimmer),
+      type_piscine: fmtVal(data.type_piscine), revetement: fmtVal(data.revetement),
+      volume_piscine: data.volume_piscine || '', equip: fmtVal(data.equip),
+      type_filtre: fmtVal(data.type_filtre), local_technique: fmtVal(data.local_technique),
+      local_contient: fmtVal(data.local_contient), p_humidite_local: fmtVal(data.p_humidite_local),
+      p_defaut_skimmer: fmtVal(data.p_defaut_skimmer), p_microbulles: fmtVal(data.p_microbulles),
+      p_bonde_cause: fmtVal(data.p_bonde_cause), p_prise_balai: fmtVal(data.p_prise_balai_perte),
+      p_cana_enterrees: fmtVal(data.p_cana_enterrees), p_plan_connu: fmtVal(data.p_plan_connu),
+      // TOITURE
+      t_anciennete: fmtVal(data.t_anciennete), t_condition: fmtVal(data.t_condition),
+      t_type_degat: fmtVal(data.t_type_degat), t_zone_int: fmtVal(data.t_zone_int),
+      t_piece_impactee: data.t_piece_impactee || '', t_etage: data.t_etage || '',
+      t_type_toiture: fmtVal(data.t_type_toiture), t_observations: data.t_observations || '',
+      t_surface_plat: data.t_surface_plat || '', t_etancheite_type: fmtVal(data.t_etancheite_type),
+      t_protection_etancheite: fmtVal(data.t_protection_etancheite),
+      t_isolation_etancheite: fmtVal(data.t_isolation_etancheite),
+      t_age_etancheite: fmtVal(data.t_age_etancheite), t_garde_corps: fmtVal(data.t_garde_corps),
+      t_acces_type_plat: data.t_acces_type_plat || '', t_acces_hauteur_plat: data.t_acces_hauteur_plat || '',
+      t_acces_qui_plat: data.t_acces_qui_plat || '', t_stationnement_plat: data.t_stationnement_plat || '',
+      t_surface_pente: data.t_surface_pente || '', t_pente_pct: data.t_pente_pct || '',
+      t_couverture_type: fmtVal(data.t_couverture_type), t_etat_couverture: fmtVal(data.t_etat_couverture),
+      t_sous_toiture: fmtVal(data.t_sous_toiture), t_age_couverture: fmtVal(data.t_age_couverture),
+      t_antichute: fmtVal(data.t_antichute),
+      t_acces_type_pente: data.t_acces_type_pente || '', t_acces_hauteur_pente: data.t_acces_hauteur_pente || '',
+      t_acces_qui_pente: data.t_acces_qui_pente || '', t_stationnement_pente: data.t_stationnement_pente || '',
+      // EXTÉRIEUR
+      e_anciennete: fmtVal(data.e_anciennete), surconso: fmtVal(data.surconso),
+      compteur_tourne: fmtVal(data.compteur_tourne), vanne_testee: fmtVal(data.vanne_testee),
+      fuite_visible: fmtVal(data.fuite_visible), fuite_visible_loc: data.fuite_visible_loc || '',
+      e_zone: fmtVal(data.e_zone), distance_compteur: data.distance_compteur || '',
+      type_sol: fmtVal(data.type_sol), compteur_loc: fmtVal(data.compteur_loc),
+      type_compteur: fmtVal(data.type_compteur), compteur_accessible: fmtVal(data.compteur_accessible),
+      regard: fmtVal(data.regard), profondeur_connue: fmtVal(data.profondeur_connue),
+      profondeur_cm: data.profondeur_cm || '', arrosage: fmtVal(data.arrosage),
+      type_arrosage: fmtVal(data.type_arrosage), vannes_sec: fmtVal(data.vannes_sec),
+      vannes_loc: data.vannes_loc || '', e_photos: fmtVal(data.photos),
+      e_observations: data.e_observations_client || '',
     });
-
     document.getElementById('successOverlay').classList.add('open');
     resetForm();
   } catch(e) {
     console.error(e);
     showToast(currentLang === 'fr'
-      ? 'Erreur lors de l\'envoi. Vérifiez votre configuration EmailJS.'
+      ? "Erreur lors de l'envoi. Vérifiez votre configuration EmailJS."
       : 'Send error. Please check your EmailJS configuration.', 'error');
   } finally {
     btn.disabled = false;
@@ -1134,18 +1308,18 @@ document.getElementById('sendFormBtn').addEventListener('click', async () => {
   }
 });
 
-// ============ EFFACER ============
+// ===== EFFACER =====
 document.getElementById('clearFormBtn').addEventListener('click', () => {
   const msg = currentLang === 'fr' ? 'Effacer tous les champs ?' : 'Clear all fields?';
   if (confirm(msg)) resetForm();
 });
 
-// ============ NOUVEAU ============
+// ===== NOUVEAU =====
 document.getElementById('newFormBtn').addEventListener('click', () => {
   document.getElementById('successOverlay').classList.remove('open');
 });
 
-// ============ TOAST ============
+// ===== TOAST =====
 let toastTimer;
 function showToast(msg, type) {
   const t = document.getElementById('toast');
