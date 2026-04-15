@@ -1188,7 +1188,7 @@ function buildEmailText(data) {
     return '\n\n=== ' + titre.toUpperCase() + ' ===\n' +
       rows.map(([lbl, v]) => lbl + ' : ' + val(v)).join('\n');
   }
-  let body = "📋 QUESTIONNAIRE D'INTERVENTION — SOS FUITE D'EAU\n════════════════════════════════════════════════\n";
+  let body = "📋 QUESTIONNAIRE D'INTERVENTION — WATER LEAK EXPERT\n════════════════════════════════════════════════\n";
   body += 'Email : ' + (data.refRapport || '—') + '\n';
   body += 'Type  : ' + (typeLabels[data.type] || data.type) + '\n';
   body += 'Date  : ' + data.createdAt + '\n';
@@ -1534,7 +1534,7 @@ function buildHtmlEmail(data) {
 
   <!-- HEADER -->
   <tr><td style="background:#ff6c16;padding:28px 32px;text-align:center;">
-    <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.7);font-weight:600;">SOS FUITE D'EAU</p>
+    <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.7);font-weight:600;"></p>
     <h1 style="margin:0;font-size:22px;font-weight:700;color:#fff;">${isFr ? 'Nouveau questionnaire reçu' : 'New questionnaire received'}</h1>
     <p style="margin:8px 0 0;font-size:13px;color:rgba(255,255,255,0.85);">${isFr ? 'Transmis automatiquement depuis le formulaire client' : 'Automatically sent from the client form'}</p>
   </td></tr>
@@ -1567,7 +1567,7 @@ function buildHtmlEmail(data) {
 
   <!-- FOOTER -->
   <tr><td style="background:#1a1a1a;padding:20px 32px;text-align:center;">
-    <p style="margin:0 0 4px;font-size:13px;font-weight:700;color:#ff6c16;letter-spacing:0.05em;">SOS FUITE D'EAU</p>
+    <p style="margin:0 0 4px;font-size:13px;font-weight:700;color:#ff6c16;letter-spacing:0.05em;"></p>
     <p style="margin:0;font-size:11px;color:#888;">contact@sosfuitedeau.com — ${isFr ? 'Message généré automatiquement' : 'Automatically generated message'}</p>
   </td></tr>
 
