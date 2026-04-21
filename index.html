@@ -620,7 +620,7 @@
     <!-- ======== TOITURE ======== -->
     <div class="panel" id="panel-toiture">
 
-      <!-- CARTE 1 : Origine du problème (existante) -->
+      <!-- CARTE 1 : Origine du problème -->
       <div class="form-card">
         <div class="form-card-header"><span class="step-num">1</span> <span data-fr="Origine du problème" data-en="Origin of the problem">Origine du problème</span></div>
         <div class="form-card-body">
@@ -641,7 +641,6 @@
               <label class="checkbox-item"><input type="checkbox" name="t_condition" value="fortes_pluies"/> <span data-fr="Après fortes pluies" data-en="After heavy rain">Après fortes pluies</span></label>
               <label class="checkbox-item"><input type="checkbox" name="t_condition" value="pluies_continues"/> <span data-fr="Pluies continues" data-en="Continuous rain">Pluies continues</span></label>
               <label class="checkbox-item"><input type="checkbox" name="t_condition" value="vent_pluie"/> <span data-fr="Vent + pluie" data-en="Wind + rain">Vent + pluie</span></label>
-              <label class="checkbox-item"><input type="checkbox" name="t_condition" value="fonte_neige"/> <span data-fr="Fonte de neige" data-en="Snow melt">Fonte de neige</span></label>
               <label class="checkbox-item"><input type="checkbox" name="t_condition" value="permanente"/> <span data-fr="Permanente" data-en="Permanent">Permanente</span></label>
               <label class="checkbox-item"><input type="checkbox" name="t_condition" value="inconnue"/> <span data-fr="Inconnue" data-en="Unknown">Inconnue</span></label>
               <label class="checkbox-item"><input type="checkbox" name="t_condition" value="autre" class="triggers-preciser" data-target="t_condition_autre_wrap"/> <span data-fr="Autre" data-en="Other">Autre</span></label>
@@ -1108,7 +1107,6 @@ document.addEventListener('change', function(e) {
       '.triggers-preciser[data-target="' + targetId + '"]:checked'
     ).length > 0;
     wrap.classList.toggle('visible', anyChecked);
-    // Pour les modules toiture (display:none au lieu de .visible)
     if (wrap.style.display !== undefined && !wrap.classList.contains('preciser-field')) {
       wrap.style.display = anyChecked ? 'block' : 'none';
     }
@@ -1119,7 +1117,7 @@ document.addEventListener('change', function(e) {
   }
 });
 
-// Gestion spéciale pour les modules toiture (ils sont des preciser-field avec style inline)
+// Gestion spéciale pour les modules toiture
 document.addEventListener('change', function(e) {
   if (e.target.name === 't_type_toiture') {
     const platWrap = document.getElementById('t_toit_plat_wrap');
@@ -1165,82 +1163,6 @@ function collectForm() {
   });
   data.createdAt = new Date().toLocaleString(currentLang === 'fr' ? 'fr-FR' : 'en-GB');
   return data;
-}
-
-// ===== BUILD EMAIL TEXT =====
-function buildEmailText(data) {
-  const isFr = data.lang !== 'en';
-  const typeLabels = {
-    interieur: isFr ? 'Intérieur' : 'Interior',
-    piscine:   isFr ? 'Piscine'   : 'Pool',
-    toiture:   isFr ? 'Toiture'   : 'Roofing',
-    exterieur: isFr ? 'Extérieur' : 'Exterior'
-  };
-  const val = v => !v ? '—' : Array.isArray(v) ? (v.length ? v.join(', ') : '—') : (v || '—');
-  function withAutre(v, autreVal) {
-    const base = val(v);
-    if (base === '—') return '—';
-    return (autreVal && Array.isArray(v) && v.includes('autre')) ? base + ' (' + autreVal + ')' : base;
-  }
-  function section(titre, lignes) {
-    const rows = lignes.filter(([, v]) => v && v !== '—' && !(Array.isArray(v) && !v.length));
-    if (!rows.length) return '';
-    return '\n\n=== ' + titre.toUpperCase() + ' ===\n' +
-      rows.map(([lbl, v]) => lbl + ' : ' + val(v)).join('\n');
-  }
-  let body = "📋 QUESTIONNAIRE D'INTERVENTION — WATER LEAK EXPERT\n════════════════════════════════════════════════\n";
-  body += 'Email : ' + (data.refRapport || '—') + '\n';
-  body += 'Type  : ' + (typeLabels[data.type] || data.type) + '\n';
-  body += 'Date  : ' + data.createdAt + '\n';
-
-  if (data.type === 'toiture') {
-    body += section('1. Origine du problème', [
-      ['Ancienneté', withAutre(data.t_anciennete, data.t_anciennete_autre)],
-      ['Conditions', withAutre(data.t_condition, data.t_condition_autre)],
-      ['Type dégât', withAutre(data.t_type_degat, data.t_type_degat_autre)],
-      ['Zone intérieure', withAutre(data.t_zone_int, data.t_zone_int_autre)],
-      ['Pièce impactée', data.t_piece_impactee],
-      ['Étage', data.t_etage],
-      ['Type toiture', data.t_type_toiture],
-      ['Observations', data.t_observations]
-    ]);
-    // Module A
-    if (data.t_type_toiture && data.t_type_toiture.includes('toit_plat')) {
-      body += section('MODULE A — TOIT PLAT', [
-        ['Surface (m²)', data.t_surface_plat],
-        ['Type étanchéité', withAutre(data.t_etancheite_type, data.t_etancheite_type_autre)],
-        ['Protection', data.t_protection_etancheite],
-        ['Isolation', data.t_isolation_etancheite],
-        ['Âge étanchéité', data.t_age_etancheite],
-        ['Garde-corps', data.t_garde_corps],
-        ['Lignes de vie', data.t_lignes_vie_plat],
-        ['Points ancrage', data.t_ancrage_plat],
-        ["Type d'accès", data.t_acces_type_plat],
-        ["Hauteur d'accès", data.t_acces_hauteur_plat],
-        ['Échelle', data.t_echelle_plat],
-        ['Qui donne accès', data.t_acces_qui_plat],
-        ['Stationnement', data.t_stationnement_plat]
-      ]);
-    }
-    // Module B
-    if (data.t_type_toiture && data.t_type_toiture.includes('toit_pente')) {
-      body += section('MODULE B — TOIT EN PENTE', [
-        ['Surface (m²)', data.t_surface_pente],
-        ['Pente (%)', data.t_pente_pct],
-        ['Type couverture', withAutre(data.t_couverture_type, data.t_couverture_autre)],
-        ['État couverture', data.t_etat_couverture],
-        ['Sous-toiture', data.t_sous_toiture],
-        ['Âge couverture', data.t_age_couverture],
-        ['Dispositifs antichute', data.t_antichute],
-        ["Type d'accès", data.t_acces_type_pente],
-        ["Hauteur d'accès", data.t_acces_hauteur_pente],
-        ['Échelle', data.t_echelle_pente],
-        ['Qui donne accès', data.t_acces_qui_pente],
-        ['Stationnement', data.t_stationnement_pente]
-      ]);
-    }
-  }
-  return body;
 }
 
 // ===== RESET =====
@@ -1302,7 +1224,6 @@ function buildHtmlEmail(data) {
     exterieur: isFr ? 'Extérieur' : 'Exterior',
   };
 
-  // Styles partagés
   const S = {
     wrap:    'background:#f0f0f0;padding:30px 0;font-family:Segoe UI,Arial,sans-serif;',
     card:    'width:620px;background:#ffffff;border-radius:14px;overflow:hidden;',
@@ -1316,23 +1237,15 @@ function buildHtmlEmail(data) {
     bHead:   'background:#ff6c16;padding:11px 16px;',
     bTitle:  'margin:0;font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.07em;',
     bBody:   'padding:14px 16px;',
-    tdLbl:   'font-size:12px;color:#888;font-weight:600;padding:5px 0;width:45%;',
-    tdVal:   'font-size:13px;color:#1a1a1a;font-weight:500;padding:5px 0;',
-    tdLblB:  'font-size:12px;color:#888;font-weight:600;padding:5px 8px;width:45%;background:#f8f8f8;',
-    tdValB:  'font-size:13px;color:#1a1a1a;font-weight:500;padding:5px 8px;background:#f8f8f8;',
     footer:  'background:#1a1a1a;padding:22px 32px;text-align:center;',
   };
 
-  // Helpers
   function val(v) {
     if (!v || v === '' || v === '—') return null;
     if (Array.isArray(v)) return v.length ? v.join(', ') : null;
     return v;
   }
 
-  // Construit un bloc de section avec titre et lignes label/valeur
-  // lignes = array de [label, valeur]
-  // Filtre automatiquement les valeurs vides
   function bloc(titre, lignes, accentColor) {
     const color = accentColor || '#ff6c16';
     const rows = lignes
@@ -1356,11 +1269,6 @@ function buildHtmlEmail(data) {
       </div>`;
   }
 
-  function sectionTag(label) {
-    return `<div style="${S.secTag}"><p style="${S.secLbl}">${label}</p></div>`;
-  }
-
-  // ===== SECTIONS PAR TYPE =====
   let sections = '';
 
   if (data.type === 'interieur') {
@@ -1441,7 +1349,6 @@ function buildHtmlEmail(data) {
       [isFr ? 'Observations' : 'Observations', data.t_observations],
     ]);
 
-    // Module A — toit plat
     const platChecked = Array.isArray(data.t_type_toiture)
       ? data.t_type_toiture.includes('toit_plat')
       : data.t_type_toiture === 'toit_plat';
@@ -1465,7 +1372,6 @@ function buildHtmlEmail(data) {
       ], '#e05e10');
     }
 
-    // Module B — toit en pente
     const penteChecked = Array.isArray(data.t_type_toiture)
       ? data.t_type_toiture.includes('toit_pente')
       : data.t_type_toiture === 'toit_pente';
@@ -1523,7 +1429,6 @@ function buildHtmlEmail(data) {
     ]);
   }
 
-  // ===== ASSEMBLAGE HTML FINAL =====
   return `<!DOCTYPE html>
 <html lang="${data.lang}">
 <head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
@@ -1534,7 +1439,6 @@ function buildHtmlEmail(data) {
 
   <!-- HEADER -->
   <tr><td style="background:#ff6c16;padding:28px 32px;text-align:center;">
-    <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.7);font-weight:600;"></p>
     <h1 style="margin:0;font-size:22px;font-weight:700;color:#fff;">${isFr ? 'Nouveau questionnaire reçu' : 'New questionnaire received'}</h1>
     <p style="margin:8px 0 0;font-size:13px;color:rgba(255,255,255,0.85);">${isFr ? 'Transmis automatiquement depuis le formulaire client' : 'Automatically sent from the client form'}</p>
   </td></tr>
@@ -1567,7 +1471,6 @@ function buildHtmlEmail(data) {
 
   <!-- FOOTER -->
   <tr><td style="background:#1a1a1a;padding:20px 32px;text-align:center;">
-    <p style="margin:0 0 4px;font-size:13px;font-weight:700;color:#ff6c16;letter-spacing:0.05em;"></p>
     <p style="margin:0;font-size:11px;color:#888;">contact@sosfuitedeau.com — ${isFr ? 'Message généré automatiquement' : 'Automatically generated message'}</p>
   </td></tr>
 
@@ -1576,6 +1479,7 @@ function buildHtmlEmail(data) {
 </table>
 </body></html>`;
 }
+
 // ===== EFFACER =====
 document.getElementById('clearFormBtn').addEventListener('click', () => {
   const msg = currentLang === 'fr' ? 'Effacer tous les champs ?' : 'Clear all fields?';
